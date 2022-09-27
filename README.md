@@ -4,6 +4,6 @@
 
 Шушарин Николай - prefie (backend, db)
 
-Истомина Кристина - (design, frontend)
+Истомина Кристина - Christmasy (design, frontend)
 
-Чиркова Юлия - (analytics, frontend)
+Чиркова Юлия - SchwJ (analytics, frontend)
