@@ -1,0 +1,33 @@
+<nz-layout class="full-width full-height">
+  <nz-page-header class="memuaro-header">
+    <nz-page-header-title class="auth-page__header-title clickable">
+      <app-svg-icon class="memuaro-logo" icon="memuaro-logo"></app-svg-icon>
+    </nz-page-header-title>
+  </nz-page-header>
+  <nz-content>
+    <div class="auth-page__bg full-width flex-center">
+      <div googleSigninButton>
+        <asl-google-signin-button type="standard" size="large" shape="pill"></asl-google-signin-button>
+      </div>
+    </div>
+
+    <div class="auth-page__info-container flex-center">
+      <ul class="auth-page__info">
+        <li class="auth-page__info-item">
+          <span class="auth-page__info-icon" nz-icon nzType="heart" nzTheme="outline"></span>
+          <span>Узнавайте о жизни любимых</span>
+        </li>
+
+        <li class="auth-page__info-item">
+          <span class="auth-page__info-icon" nz-icon nzType="read" nzTheme="outline"></span>
+          <span>Напишите свою книгу</span>
+        </li>
+
+        <li class="auth-page__info-item">
+          <span class="auth-page__info-icon" nz-icon nzType="comment" nzTheme="outline"></span>
+          <span>Начните больше общаться с родными</span>
+        </li>
+      </ul>
+    </div>
+  </nz-content>
+</nz-layout>

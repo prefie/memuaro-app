@@ -1,0 +1,52 @@
+@import './src/styles/variables';
+
+:host {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.memuaro-header {
+  background-color: $color-basic;
+  height: 65px;
+  display: block;
+}
+
+.auth-page__header-title {
+  color: $color-text;
+}
+
+.memuaro-logo {
+  width: 105px;
+  height: 27px;
+}
+
+.auth-page__bg {
+  height: 55%;
+  background-image: url('../../../assets/auth-bg.png');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.auth-page__info-container {
+  height: 45%;
+}
+
+.auth-page__info {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.auth-page__info-item {
+  display: flex;
+  align-items: center;
+  gap: 35px;
+  color: $color-text;
+  font-size: 2vw;
+}
+
+.auth-page__info-icon {
+  transform: scale(1.5);
+}
