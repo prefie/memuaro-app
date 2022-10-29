@@ -7,6 +7,7 @@ using Memuaro.Auth.Dtos;
 using Memuaro.Auth.Exceptions;
 using Memuaro.Auth.Settings;
 using Memuaro.Persistance.Entities;
+using Memuaro.Persistance.Models;
 using Memuaro.Persistance.Repositories.UserRepository;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -40,24 +41,34 @@ public class AuthProvider
 
             return await GoogleJsonWebSignature.ValidateAsync(idToken, validationSettings);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             return null;
         }
     }
 
-    public UserCredentials GetCurrentUserCredential(string accessToken)
+    public UserCredentials GetCurrentUserCredential(string? accessToken)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         var securityToken = tokenHandler.ReadJwtToken(accessToken);
         var emailClaim = securityToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.Email);
-        
-        if (emailClaim == null) throw new UnauthorizedException();
+        var idClaim = securityToken.Claims.FirstOrDefault(claim => claim.Type == ClaimTypes.NameIdentifier);
+        var roles = securityToken.Claims.Where(claim => claim.Type == ClaimTypes.Role).Select(role =>
+        {
+            if (Enum.TryParse(typeof(Role), role.Value, out var parsedRole) && parsedRole != null)
+            {
+                return (Role) parsedRole;
+            }
 
-        return new UserCredentials {Email = emailClaim.Value};
+            throw new Exception();
+        });
+        
+        if (emailClaim == null || idClaim == null) throw new UnauthorizedException();
+
+        return new UserCredentials {Email = emailClaim.Value, Id = Guid.Parse(idClaim.Value), Roles = roles.ToHashSet()};
     }
 
-    public async Task<UserCredentials> CheckTokens(TokenResponse tokens)
+    public async Task<UserCredentials> CheckTokens(TokensDto tokens)
     {
         var userCred = GetCurrentUserCredential(tokens.AccessToken);
 
@@ -76,7 +87,7 @@ public class AuthProvider
         return userCred;
     }
 
-    public TokenResponse GenerateTokens(UserCredentials userCredentials)
+    public TokensDto GenerateTokens(UserCredentials userCredentials)
     {
         var tokenHandler = new JwtSecurityTokenHandler();
         if (_jwtSettings.SecurityKey == null)
@@ -95,7 +106,7 @@ public class AuthProvider
         );
         var accessToken = tokenHandler.WriteToken(jwtSecurityToken);
         var refreshToken = GenerateRefreshToken();
-        var tokens = new TokenResponse {AccessToken = accessToken, RefreshToken = refreshToken};
+        var tokens = new TokensDto {AccessToken = accessToken, RefreshToken = refreshToken};
 
         return tokens;
     }
@@ -104,13 +115,13 @@ public class AuthProvider
     {
         var claims = new List<Claim>();
         claims.Add(new Claim(ClaimTypes.NameIdentifier, userCredentials.Id.ToString()));
-        claims.Add(new Claim(ClaimTypes.Email, userCredentials.Email));
-        claims.AddRange(userCredentials.Roles.Select(role => new Claim(ClaimTypes.Role, role.ToString())));
+        claims.Add(new Claim(ClaimTypes.Email, userCredentials.Email ?? throw new InvalidOperationException()));
+        claims.AddRange(userCredentials.Roles?.Select(role => new Claim(ClaimTypes.Role, role.ToString())) ?? throw new InvalidOperationException());
 
         return claims;
     }
 
-    public async Task SaveTokens(UserCredentials userCredentials, TokenResponse tokens)
+    public async Task SaveTokens(UserCredentials userCredentials, TokensDto tokens)
     {
         var user = await _userRepository.GetByEmailAsync(userCredentials.Email);
         if (user == null)

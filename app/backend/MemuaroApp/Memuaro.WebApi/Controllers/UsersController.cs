@@ -32,7 +32,7 @@ public class UsersController : BaseController
             Id = user.Id,
             Name = user.Name,
             PhotoUrl = user.PhotoUrl,
-            Roles = user.Roles
+            Roles = user.Roles?.Select(role => role.ToString()),
         });
     }
 }
