@@ -13,6 +13,6 @@ public class UserRepository : BaseRepository<User>, IUserRepository
     {
     }
 
-    public Task<User> GetByEmailAsync(string email) =>
+    public Task<User> GetByEmailAsync(string? email) =>
         MongoCollection.Find(user => user.Email == email).FirstOrDefaultAsync();
 }

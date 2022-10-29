@@ -22,7 +22,7 @@ public class AuthController : BaseController
 
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult<TokenResponse>> Login([FromQuery] string idToken)
+    public async Task<ActionResult<TokensDto>> Login([FromQuery] string idToken)
     {
         var payload = await _authProvider.ValidateAsync(idToken);
         if (payload == null || payload.Email.IsNullOrEmpty())
@@ -48,7 +48,7 @@ public class AuthController : BaseController
 
     [HttpPost]
     [Route("refresh")]
-    public async Task<ActionResult<TokenResponse>> RefreshTokens([FromBody] TokenResponse tokens)
+    public async Task<ActionResult<TokensDto>> RefreshTokens([FromBody] TokensDto tokens)
     {
         var userCred = await _authProvider.CheckTokens(tokens);
         var newTokens = _authProvider.GenerateTokens(userCred);
