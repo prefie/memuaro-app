@@ -1,6 +1,7 @@
 ﻿using Memuaro.Auth;
 using Memuaro.Persistance.Client;
 using Memuaro.Persistance.Entities;
+using Memuaro.Persistance.Models;
 using Memuaro.Persistance.Repositories.GlobalQuestionRepository;
 using Memuaro.Persistance.Repositories.QuestionRepository;
 using Memuaro.WebApi.Dtos.Question;
@@ -31,7 +32,7 @@ public class QuestionsController : BaseController
 
     [HttpGet]
     [Route("new")]
-    public async Task<ActionResult<Question>> GetNewQuestion([FromQuery] Guid userId)
+    public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId)
     {
         CheckAccessForUser(userId);
         
@@ -39,7 +40,7 @@ public class QuestionsController : BaseController
         newGlobalQuestion.UserIds ??= new List<Guid>();
 
         newGlobalQuestion.UserIds.Add(userId);
-        var userQuestion = new Question {Id = Guid.NewGuid(), Title = newGlobalQuestion.Title, UserId = userId};
+        var userQuestion = new Question {Id = Guid.NewGuid(), Title = newGlobalQuestion.Title, UserId = userId, Status = Status.Unanswered};
 
         using var session = _databaseClient.GetSession();
         var transactionOptions = new TransactionOptions(
@@ -58,7 +59,14 @@ public class QuestionsController : BaseController
             transactionOptions,
             cancellationToken);
 
-        return Ok(result);
+        return Ok(new QuestionDto
+        {
+            Id = result.Id,
+            Answer = result.Answer,
+            Title = result.Title,
+            UserId = result.UserId,
+            Status = result.Status.ToString()
+        });
     }
 
     [HttpGet]
@@ -68,7 +76,16 @@ public class QuestionsController : BaseController
         CheckAccessForUser(userId);
         
         var allQuestions = await _questionRepository.GetForUserAsync(userId);
-        return Ok(new QuestionsDto{Questions = allQuestions});
+        var questions = allQuestions.Select(question => new QuestionDto
+        {
+            Id = question.Id,
+            Answer = question.Answer,
+            Title = question.Title,
+            UserId = question.UserId,
+            Status = question.Status.ToString()
+        });
+        
+        return Ok(new QuestionsDto{Questions = questions.ToList()});
     }
 
     [HttpPatch]
@@ -80,6 +97,7 @@ public class QuestionsController : BaseController
         CheckAccessForQuestion(question);
         
         question.Answer = request.Answer;
+        if (request.NewStatus != null) question.Status = request.NewStatus.Value;
 
         await _questionRepository.UpdateAsync(question.Id, question);
 

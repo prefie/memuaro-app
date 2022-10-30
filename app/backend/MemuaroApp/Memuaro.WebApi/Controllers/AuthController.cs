@@ -4,6 +4,7 @@ using Memuaro.Auth.Exceptions;
 using Memuaro.Persistance.Entities;
 using Memuaro.Persistance.Models;
 using Memuaro.Persistance.Repositories.UserRepository;
+using Memuaro.WebApi.Dtos.Auth;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
@@ -22,9 +23,9 @@ public class AuthController : BaseController
 
     [HttpPost]
     [Route("login")]
-    public async Task<ActionResult<TokensDto>> Login([FromQuery] string idToken)
+    public async Task<ActionResult<TokensDto>> Login([FromBody] LoginRequestDto requestDto)
     {
-        var payload = await _authProvider.ValidateAsync(idToken);
+        var payload = await _authProvider.ValidateAsync(requestDto.IdToken);
         if (payload == null || payload.Email.IsNullOrEmpty())
         {
             throw new UnauthorizedException("Bad payload");
