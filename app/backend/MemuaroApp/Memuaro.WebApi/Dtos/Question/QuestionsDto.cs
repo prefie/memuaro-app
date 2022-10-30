@@ -2,5 +2,5 @@
 
 public class QuestionsDto
 {
-    public List<Persistance.Entities.Question>? Questions { get; set; }
+    public List<QuestionDto>? Questions { get; set; }
 }
