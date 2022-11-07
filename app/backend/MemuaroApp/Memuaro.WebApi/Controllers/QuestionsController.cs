@@ -35,12 +35,13 @@ public class QuestionsController : BaseController
     public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId)
     {
         CheckAccessForUser(userId);
-        
+
         var newGlobalQuestion = await _globalQuestionRepository.GetRandomGlobalQuestionForUser(userId);
         newGlobalQuestion.UserIds ??= new List<Guid>();
 
         newGlobalQuestion.UserIds.Add(userId);
-        var userQuestion = new Question {Id = Guid.NewGuid(), Title = newGlobalQuestion.Title, UserId = userId, Status = Status.Unanswered};
+        var userQuestion = new Question
+            {Id = Guid.NewGuid(), Title = newGlobalQuestion.Title, UserId = userId, Status = Status.Unanswered};
 
         using var session = _databaseClient.GetSession();
         var transactionOptions = new TransactionOptions(
@@ -59,14 +60,7 @@ public class QuestionsController : BaseController
             transactionOptions,
             cancellationToken);
 
-        return Ok(new QuestionDto
-        {
-            Id = result.Id,
-            Answer = result.Answer,
-            Title = result.Title,
-            UserId = result.UserId,
-            Status = result.Status.ToString()
-        });
+        return Ok(new QuestionDto(result));
     }
 
     [HttpGet]
@@ -74,7 +68,7 @@ public class QuestionsController : BaseController
     public async Task<ActionResult<QuestionsDto>> GetAllQuestionsForUser([FromQuery] Guid userId)
     {
         CheckAccessForUser(userId);
-        
+
         var allQuestions = await _questionRepository.GetForUserAsync(userId);
         var questions = allQuestions.Select(question => new QuestionDto
         {
@@ -84,24 +78,26 @@ public class QuestionsController : BaseController
             UserId = question.UserId,
             Status = question.Status.ToString()
         });
-        
-        return Ok(new QuestionsDto{Questions = questions.ToList()});
+
+        return Ok(new QuestionsDto {Questions = questions.ToList()});
     }
 
     [HttpPatch]
     [Route("{id}")]
-    public async Task<ActionResult<Question>> PatchAnswer(string id, [FromBody] AnswerRequestDto request)
+    public async Task<ActionResult<QuestionDto>> PatchAnswer(string id, [FromBody] AnswerRequestDto request)
     {
         var question = await _questionRepository.GetAsync(Guid.Parse(id));
-        
+        if (question == null)
+            throw new NotFoundException(nameof(Question), id);
+
         CheckAccessForQuestion(question);
-        
+
         question.Answer = request.Answer;
         if (request.NewStatus != null) question.Status = request.NewStatus.Value;
 
         await _questionRepository.UpdateAsync(question.Id, question);
 
-        return Ok(question);
+        return Ok(new QuestionDto(question));
     }
 
     [HttpPost]
