@@ -4,8 +4,9 @@ using Newtonsoft.Json.Converters;
 namespace Memuaro.Persistance.Models;
 
 [JsonConverter(typeof(StringEnumConverter))]
-public enum Role
+public enum Status
 {
-    User,
-    Admin
+    Unanswered,
+    PartlyAnswered,
+    Answered
 }

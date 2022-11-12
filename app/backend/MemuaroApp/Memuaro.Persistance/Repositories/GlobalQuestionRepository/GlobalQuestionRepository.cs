@@ -14,5 +14,5 @@ public class GlobalQuestionRepository : BaseRepository<GlobalQuestion>, IGlobalQ
     }
 
     public Task<GlobalQuestion> GetRandomGlobalQuestionForUser(Guid userId) =>
-        MongoCollection.Find(globalQuestion => globalQuestion.UserIds != null && !globalQuestion.UserIds.Contains(userId)).FirstOrDefaultAsync();
+        MongoCollection.Find(globalQuestion => globalQuestion.UserIds == null || globalQuestion.UserIds != null && !globalQuestion.UserIds.Contains(userId)).FirstOrDefaultAsync();
 }
