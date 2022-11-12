@@ -10,6 +10,7 @@ using Memuaro.Persistance.Entities;
 using Memuaro.Persistance.Models;
 using Memuaro.Persistance.Repositories.UserRepository;
 using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Primitives;
 using Microsoft.IdentityModel.Tokens;
 
 namespace Memuaro.Auth;
@@ -29,7 +30,7 @@ public class AuthProvider
         _jwtSettings = jwtSettings.Value;
         _userRepository = userRepository;
     }
-    
+
     public async Task<GoogleJsonWebSignature.Payload?> ValidateAsync(string idToken)
     {
         try
@@ -62,10 +63,11 @@ public class AuthProvider
 
             throw new Exception();
         });
-        
+
         if (emailClaim == null || idClaim == null) throw new UnauthorizedException();
 
-        return new UserCredentials {Email = emailClaim.Value, Id = Guid.Parse(idClaim.Value), Roles = roles.ToHashSet()};
+        return new UserCredentials
+            {Email = emailClaim.Value, Id = Guid.Parse(idClaim.Value), Roles = roles.ToHashSet()};
     }
 
     public async Task<UserCredentials> CheckTokens(TokensDto tokens)
@@ -94,31 +96,21 @@ public class AuthProvider
         {
             throw new Exception($"Bad server settings");
         }
-        
-        
+
+
         var tokenKey = Encoding.UTF8.GetBytes(_jwtSettings.SecurityKey);
         var claims = GenerateClaims(userCredentials);
         var jwtSecurityToken = new JwtSecurityToken(
             claims: claims,
             expires: DateTime.UtcNow.AddMinutes(30),
-            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(tokenKey), SecurityAlgorithms.HmacSha256)
-
+            signingCredentials: new SigningCredentials(new SymmetricSecurityKey(tokenKey),
+                SecurityAlgorithms.HmacSha256)
         );
         var accessToken = tokenHandler.WriteToken(jwtSecurityToken);
         var refreshToken = GenerateRefreshToken();
         var tokens = new TokensDto {AccessToken = accessToken, RefreshToken = refreshToken};
 
         return tokens;
-    }
-
-    private IEnumerable<Claim> GenerateClaims(UserCredentials userCredentials)
-    {
-        var claims = new List<Claim>();
-        claims.Add(new Claim(ClaimTypes.NameIdentifier, userCredentials.Id.ToString()));
-        claims.Add(new Claim(ClaimTypes.Email, userCredentials.Email ?? throw new InvalidOperationException()));
-        claims.AddRange(userCredentials.Roles?.Select(role => new Claim(ClaimTypes.Role, role.ToString())) ?? throw new InvalidOperationException());
-
-        return claims;
     }
 
     public async Task SaveTokens(UserCredentials userCredentials, TokensDto tokens)
@@ -128,9 +120,38 @@ public class AuthProvider
         {
             throw new UnauthorizedException();
         }
-        
+
         user.RefreshToken = tokens.RefreshToken;
         await _userRepository.UpdateAsync(user.Id, user);
+    }
+
+    public string ParseAuthHeader(StringValues authHeader)
+    {
+        var exc = new UnauthorizedException("Invalid authorization header");
+        if (authHeader.Count != 1)
+            throw exc;
+
+        var header = authHeader[0];
+        if (string.IsNullOrEmpty(header))
+            throw exc;
+
+        var splitHeaders = header.Split();
+
+        if (splitHeaders.Length != 2)
+            throw exc;
+
+        return splitHeaders[1];
+    }
+
+    private IEnumerable<Claim> GenerateClaims(UserCredentials userCredentials)
+    {
+        var claims = new List<Claim>();
+        claims.Add(new Claim(ClaimTypes.NameIdentifier, userCredentials.Id.ToString()));
+        claims.Add(new Claim(ClaimTypes.Email, userCredentials.Email ?? throw new InvalidOperationException()));
+        claims.AddRange(userCredentials.Roles?.Select(role => new Claim(ClaimTypes.Role, role.ToString())) ??
+                        throw new InvalidOperationException());
+
+        return claims;
     }
 
     private async Task ClearRefreshToken(User user)

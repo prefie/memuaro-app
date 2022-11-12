@@ -13,7 +13,7 @@ public class UsersController : BaseController
 
     public UsersController(
         AuthProvider authProvider,
-        IUserRepository userRepository) : base(authProvider) 
+        IUserRepository userRepository) : base(authProvider)
     {
         _userRepository = userRepository;
     }
@@ -22,7 +22,7 @@ public class UsersController : BaseController
     [Route("current")]
     public async Task<ActionResult<UserDto>> GetCurrentUser()
     {
-        var accessToken = HttpContext.Request.Headers.Authorization.ToArray()[0].Split()[1];
+        var accessToken = _authProvider.ParseAuthHeader(HttpContext.Request.Headers.Authorization);
         var userCred = _authProvider.GetCurrentUserCredential(accessToken);
         var user = await _userRepository.GetByEmailAsync(userCred.Email);
 

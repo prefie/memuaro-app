@@ -2,10 +2,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memuaro.WebApi", "Memuaro.WebApi\Memuaro.WebApi.csproj", "{AAA9001C-D299-43D6-A24B-CF6731579C76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memuaro.Application", "Memuaro.Application\Memuaro.Application.csproj", "{D2063442-C363-41A1-8BDF-F1432386C2DD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memuaro.Domain", "Memuaro.Domain\Memuaro.Domain.csproj", "{FC9AE5C6-DE36-443B-8DDA-8F27E6FC3C93}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memuaro.Persistance", "Memuaro.Persistance\Memuaro.Persistance.csproj", "{325D653E-0612-4D9D-AB9B-051AE0A83FDA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Memuaro.Auth", "Memuaro.Auth\Memuaro.Auth.csproj", "{8B0F8649-3889-42F0-8FB7-9049A6D1EB72}"
@@ -20,14 +16,6 @@ Global
 		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D2063442-C363-41A1-8BDF-F1432386C2DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D2063442-C363-41A1-8BDF-F1432386C2DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D2063442-C363-41A1-8BDF-F1432386C2DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D2063442-C363-41A1-8BDF-F1432386C2DD}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FC9AE5C6-DE36-443B-8DDA-8F27E6FC3C93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FC9AE5C6-DE36-443B-8DDA-8F27E6FC3C93}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FC9AE5C6-DE36-443B-8DDA-8F27E6FC3C93}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FC9AE5C6-DE36-443B-8DDA-8F27E6FC3C93}.Release|Any CPU.Build.0 = Release|Any CPU
 		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Release|Any CPU.ActiveCfg = Release|Any CPU

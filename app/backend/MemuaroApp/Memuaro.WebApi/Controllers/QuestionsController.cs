@@ -37,6 +37,10 @@ public class QuestionsController : BaseController
         CheckAccessForUser(userId);
 
         var newGlobalQuestion = await _globalQuestionRepository.GetRandomGlobalQuestionForUser(userId);
+
+        if (newGlobalQuestion == null)
+            throw new NotFoundException("There are no more globalQuestions");
+
         newGlobalQuestion.UserIds ??= new List<Guid>();
 
         newGlobalQuestion.UserIds.Add(userId);
@@ -70,16 +74,18 @@ public class QuestionsController : BaseController
         CheckAccessForUser(userId);
 
         var allQuestions = await _questionRepository.GetForUserAsync(userId);
-        var questions = allQuestions.Select(question => new QuestionDto
-        {
-            Id = question.Id,
-            Answer = question.Answer,
-            Title = question.Title,
-            UserId = question.UserId,
-            Status = question.Status.ToString()
-        });
+        var questions = allQuestions
+            .Select(question => new QuestionDto
+            {
+                Id = question.Id,
+                Answer = question.Answer,
+                Title = question.Title,
+                UserId = question.UserId,
+                Status = question.Status.ToString()
+            })
+            .ToList();
 
-        return Ok(new QuestionsDto {Questions = questions.ToList()});
+        return Ok(new QuestionsDto {Questions = questions});
     }
 
     [HttpPatch]
@@ -113,14 +119,14 @@ public class QuestionsController : BaseController
 
     private void CheckAccessForUser(Guid userId)
     {
-        var accessToken = HttpContext.Request.Headers.Authorization.ToArray()[0].Split()[1]; // Временно
+        var accessToken = _authProvider.ParseAuthHeader(HttpContext.Request.Headers.Authorization);
         var userCred = _authProvider.GetCurrentUserCredential(accessToken);
         if (userCred.Id != userId) throw new ForbiddenException();
     }
 
     private void CheckAccessForQuestion(Question question)
     {
-        var accessToken = HttpContext.Request.Headers.Authorization.ToArray()[0].Split()[1]; // Временно
+        var accessToken = _authProvider.ParseAuthHeader(HttpContext.Request.Headers.Authorization);
         var userCred = _authProvider.GetCurrentUserCredential(accessToken);
         if (question.UserId != userCred.Id) throw new ForbiddenException();
     }
