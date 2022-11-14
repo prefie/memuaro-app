@@ -1,0 +1,30 @@
+@import 'src/styles/variables';
+
+.header {
+  background-color: $color-basic;
+  height: 65px;
+  display: block;
+}
+
+.header__title {
+  color: $color-text;
+}
+
+.header__app-logo {
+  width: 105px;
+  height: 27px;
+}
+
+.header__user-info {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  margin: 0;
+}
+
+.header__user-name {
+  font-size: 20px;
+  line-height: 22px;
+  font-weight: 400;
+  color: $color-text;
+}

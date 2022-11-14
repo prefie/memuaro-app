@@ -1,9 +1,5 @@
-<nz-layout class="full-width full-height">
-  <nz-page-header class="memuaro-header">
-    <nz-page-header-title class="auth-page__header-title clickable">
-      <app-svg-icon class="memuaro-logo" icon="memuaro-logo"></app-svg-icon>
-    </nz-page-header-title>
-  </nz-page-header>
+<nz-layout class="full-width full-height" [appLoader]="loading$ | async">
+  <app-header></app-header>
   <nz-content>
     <div class="auth-page__bg full-width flex-center">
       <div googleSigninButton>

@@ -1,0 +1,15 @@
+<div class="admin__container full-height full-height" [appLoader]="loading$ | async">
+  <input class="admin__new-question-input"
+         nz-input
+         placeholder="Введите новый вопрос"
+         nzSize="large"
+         [(ngModel)]="newQuestion"/>
+
+  <button class="admin__new-question-button"
+          nz-button
+          nzSize="large"
+          nzType="primary"
+          (click)="addNewQuestion()">
+    Добавить
+  </button>
+</div>

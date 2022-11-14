@@ -1,0 +1,16 @@
+<nz-page-header class="header">
+  <nz-page-header-title class="header__title clickable" [routerLink]="['/app/general']">
+    <app-svg-icon class="header__app-logo" icon="memuaro-logo"></app-svg-icon>
+  </nz-page-header-title>
+  <nz-page-header-extra *ngIf="user$ | async as user" class="header__user-info clickable">
+    <a nz-dropdown nzTrigger="click" [nzDropdownMenu]="menu">
+      <nz-avatar nz-page-header-avatar [nzSrc]="user.photoUrl"></nz-avatar>
+      <span class="header__user-name">{{user.name}}</span>
+    </a>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+      <ul nz-menu nzSelectable>
+        <li nz-menu-item nzDanger (click)="logout()">Выйти из аккаунта</li>
+      </ul>
+    </nz-dropdown-menu>
+  </nz-page-header-extra>
+</nz-page-header>

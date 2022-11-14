@@ -1,4 +1,4 @@
-@import './src/styles/variables';
+@import '../../styles/variables';
 
 :host {
   height: 100%;
@@ -6,24 +6,9 @@
   display: flex;
 }
 
-.memuaro-header {
-  background-color: $color-basic;
-  height: 65px;
-  display: block;
-}
-
-.auth-page__header-title {
-  color: $color-text;
-}
-
-.memuaro-logo {
-  width: 105px;
-  height: 27px;
-}
-
 .auth-page__bg {
   height: 55%;
-  background-image: url('../../../assets/auth-bg.png');
+  background-image: url('../../assets/auth-bg.png');
   background-repeat: no-repeat;
   background-size: cover;
 }

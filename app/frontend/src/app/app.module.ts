@@ -1,16 +1,19 @@
-import en from '@angular/common/locales/en';
+import ru from '@angular/common/locales/en';
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { en_US, NZ_I18N } from 'ng-zorro-antd/i18n';
+import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
 import { registerLocaleData } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { NZ_CONFIG, NzConfig } from 'ng-zorro-antd/core/config';
 
-registerLocaleData(en);
+registerLocaleData(ru);
+
+const ngZorroConfig: NzConfig = {};
 
 @NgModule({
   declarations: [
@@ -25,7 +28,8 @@ registerLocaleData(en);
     NzIconModule,
   ],
   providers: [
-    {provide: NZ_I18N, useValue: en_US},
+    {provide: NZ_I18N, useValue: ru_RU},
+    {provide: NZ_CONFIG, useValue: ngZorroConfig}
   ],
   bootstrap: [AppComponent]
 })

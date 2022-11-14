@@ -1,7 +1,8 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
-import { SocialAuthService, SocialUser } from '@abacritt/angularx-social-login';
-import { Subject, takeUntil } from 'rxjs';
+import { SocialAuthService } from '@abacritt/angularx-social-login';
+import { BehaviorSubject, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { Router } from '@angular/router';
+import { ApiService } from '../../api/api.service';
 
 @Component({
   selector: 'app-auth-page',
@@ -10,20 +11,22 @@ import { Router } from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthPageComponent implements OnInit, OnDestroy {
-  private user!: SocialUser;
+  readonly loading$ = new BehaviorSubject<boolean>(false);
 
   private readonly destroy$ = new Subject<void>();
 
   constructor(private readonly authService: SocialAuthService,
-              private readonly router: Router) {}
+              private readonly router: Router,
+              private readonly apiService: ApiService) {}
 
   ngOnInit(): void {
     this.authService.authState.pipe(
+      tap(() => this.loading$.next(true)),
+      switchMap((user) => this.apiService.login(user.idToken)),
+      take(1),
       takeUntil(this.destroy$)
-    ).subscribe((user) => {
-      this.user = user;
-      // TODO: передавать idToken на бэк
-      this.router.navigate(['general']).then();
+    ).subscribe(() => {
+      this.router.navigate(['app', 'general']).then();
     });
   }
 
