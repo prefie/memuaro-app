@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  backend:
+    image: backend-memuaro
+    build:
+      context: .\backend\MemuaroApp
+      dockerfile: Dockerfile
+    ports:
+      - "5000:80"
+
+  frontend:
+    image: frontend-memuaro
+    build:
+      context: .\frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+      - "443:443"
