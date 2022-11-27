@@ -1,7 +1,7 @@
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { SocialAuthService } from '@abacritt/angularx-social-login';
-import { BehaviorSubject, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { ChangeDetectionStrategy, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { BehaviorSubject, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
 import { ApiService } from '../../api/api.service';
 
 @Component({

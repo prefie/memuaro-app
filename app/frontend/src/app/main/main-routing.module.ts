@@ -12,6 +12,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/general/general-page.module').then(m => m.GeneralPageModule)
       },
       {
+        path: 'new-question',
+        loadChildren: () => import('./pages/new-question/new-question.module').then(m => m.NewQuestionModule)
+      },
+      {
         path: 'admin',
         loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule)
       },

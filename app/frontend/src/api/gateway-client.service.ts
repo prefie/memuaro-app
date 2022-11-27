@@ -67,7 +67,11 @@ export class GatewayClientService {
   private getRequest<T>(request: Observable<HttpResponse<T>>): Observable<T> {
     const accessToken = getCookie(ACCESS_TOKEN_COOKIE_NAME);
 
-    if (!accessToken || (jwtDecode(accessToken) as DecodedJwtToken).exp * 1000 > Date.now()) {
+    if (!accessToken) {
+      this.router.navigate(['/auth']).then();
+    }
+
+    if ((jwtDecode(accessToken) as DecodedJwtToken).exp * 1000 > Date.now()) {
       return request.pipe(
         catchError(() => of(null)),
         filter((response): response is HttpResponse<T> => !!response),

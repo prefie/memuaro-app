@@ -1,11 +1,12 @@
 <nz-layout class="full-width full-height" [appLoader]="loading$ | async">
   <nz-sider class="general-page__side-menu" nzWidth="400px">
     <div class="flex-center">
-      <button class="general-page__new-question-button"
-              nz-button nzSize="large" nzType="primary"
-              (click)="getNewQuestion()">
+      <a class="general-page__new-question-button"
+         nz-button nzSize="large" nzType="primary"
+         [routerLink]="['..', 'new-question']"
+         [relativeTo]="route">
         Получить новый вопрос
-      </button>
+      </a>
     </div>
 
     <nz-input-group class="general-page__input-group" nzSearch [nzAddOnAfter]="suffixIconButton">
@@ -56,7 +57,10 @@
     <ng-container *ngIf="activeQuestion$ | async as activeQuestion; else noQuestion">
       <div class="general-page__question-container">{{activeQuestion.title}}</div>
 
-      <angular-editor class="general-page__answer-editor" [config]="config" [(ngModel)]="activeQuestion.answer"></angular-editor>
+      <angular-editor class="general-page__answer-editor"
+                      [config]="config"
+                      [(ngModel)]="activeQuestion.answer">
+      </angular-editor>
 
       <div class="general-page__answer-controls-container">
         <label nz-checkbox

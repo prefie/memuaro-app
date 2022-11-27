@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
-import { ApiService } from '../../../../api/api.service';
-import { MainService } from '../../main.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   BehaviorSubject,
   map,
@@ -14,8 +14,9 @@ import {
   tap
 } from 'rxjs';
 import { QuestionDto, UserDto } from '../../../../api/api.models';
+import { ApiService } from '../../../../api/api.service';
+import { MainService } from '../../main.service';
 import { ANGULAR_EDITOR_CONFIG_DEFAULT, QuestionStatus } from './general-page.models';
-import { NzNotificationService } from 'ng-zorro-antd/notification';
 
 @Component({
   selector: 'app-general-page',
@@ -38,7 +39,9 @@ export class GeneralPageComponent implements OnDestroy {
 
   private readonly destroy$ = new Subject<void>();
 
-  constructor(private readonly apiService: ApiService,
+  constructor(readonly route: ActivatedRoute,
+              private readonly router: Router,
+              private readonly apiService: ApiService,
               private readonly mainService: MainService,
               private readonly notification: NzNotificationService) {
     this.user$ = mainService.user$;
@@ -48,7 +51,7 @@ export class GeneralPageComponent implements OnDestroy {
       tap(() => this.loading$.next(true)),
       switchMap(() => this.user$),
       switchMap((user) => apiService.getAllQuestionsForUser(user.id)),
-      map(({questions}) => {
+      map(({ questions }) => {
         const searchRequest = this.searchRequest.toLowerCase().trim();
         return questions.reduce<Record<QuestionStatus, QuestionDto[]>>((questionsByStatus, question) => {
           if (question.title.toLowerCase().includes(searchRequest)) {
@@ -62,17 +65,8 @@ export class GeneralPageComponent implements OnDestroy {
         });
       }),
       tap(() => this.loading$.next(false)),
-      shareReplay({bufferSize: 1, refCount: true})
+      shareReplay({ bufferSize: 1, refCount: true })
     );
-  }
-
-  getNewQuestion(): void {
-    this.user$.pipe(
-      tap(() => this.loading$.next(true)),
-      switchMap((user) => this.apiService.getNewQuestion(user.id, [""])),
-      take(1),
-      takeUntil(this.destroy$)
-    ).subscribe(() => this.update$.next());
   }
 
   selectAsActive(question: QuestionDto): void {
@@ -83,7 +77,7 @@ export class GeneralPageComponent implements OnDestroy {
   saveAnswer(question: QuestionDto): void {
     const newStatus = this.isActiveQuestionPartlyAnswered$.getValue() ? QuestionStatus.PARTLY_ANSWERED : QuestionStatus.ANSWERED;
     this.loading$.next(true);
-    this.apiService.giveAnswer(question.id, {answer: `${question.answer}`, newStatus}).pipe(
+    this.apiService.giveAnswer(question.id, { answer: `${question.answer}`, newStatus }).pipe(
       take(1),
       takeUntil(this.destroy$)
     ).subscribe(() => {
@@ -92,7 +86,7 @@ export class GeneralPageComponent implements OnDestroy {
         'success',
         'Ваш ответ успешно сохранён',
         '',
-        {nzPlacement: 'bottomRight'}
+        { nzPlacement: 'bottomRight' }
       );
       this.activeQuestion$.next(null);
     });

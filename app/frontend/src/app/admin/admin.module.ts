@@ -1,11 +1,12 @@
-import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { NzButtonModule } from 'ng-zorro-antd/button';
+import { NzInputModule } from 'ng-zorro-antd/input';
+import { NzSelectModule } from 'ng-zorro-antd/select';
+import { LoaderModule } from '../components/loader/loader.module';
 import { AdminRoutingModule } from './admin-routing.module';
 import { AdminComponent } from './admin.component';
-import { NzInputModule } from "ng-zorro-antd/input";
-import { NzButtonModule } from "ng-zorro-antd/button";
-import { LoaderModule } from "../components/loader/loader.module";
-import { FormsModule } from "@angular/forms";
 
 
 @NgModule({
@@ -18,7 +19,8 @@ import { FormsModule } from "@angular/forms";
     NzInputModule,
     NzButtonModule,
     LoaderModule,
-    FormsModule
+    FormsModule,
+    NzSelectModule
   ]
 })
 export class AdminModule {}

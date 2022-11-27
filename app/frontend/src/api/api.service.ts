@@ -1,11 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
-  AddQuestionRequestDto,
   AnswerRequestDto,
   CategoriesDto,
   CategoryDto,
-  CreateGlobalQuestionRequestDto,
   GetGlobalQuestionsRequestDto,
   GlobalQuestionDto,
   GlobalQuestionsDto,
@@ -43,13 +41,13 @@ export class ApiService {
     return this.gatewayClientService.patch<QuestionDto>(`/api/questions/${questionId}`, content);
   }
 
-  createNewGlobalQuestion(globalQuestion: CreateGlobalQuestionRequestDto): Observable<GlobalQuestionDto> {
-    const content = JSON.stringify(globalQuestion);
+  createNewGlobalQuestion(title: string, categoryId?: string): Observable<GlobalQuestionDto> {
+    const content = JSON.stringify({title, categoryId});
     return this.gatewayClientService.post<GlobalQuestionDto>('/api/questions/newGlobalQuestion', content);
   }
 
-  createNewQuestion(question: AddQuestionRequestDto): Observable<QuestionDto> {
-    const content = JSON.stringify(question);
+  createNewQuestion(userId: string, title: string): Observable<QuestionDto> {
+    const content = JSON.stringify({userId, title});
     return this.gatewayClientService.post<QuestionDto>('/api/questions/new', content);
   }
 
@@ -57,9 +55,10 @@ export class ApiService {
     return this.gatewayClientService.get<UserDto>('/api/users/current');
   }
 
-  getGlobalQuestions(request: GetGlobalQuestionsRequestDto): Observable<GlobalQuestionsDto> {
-    return this.gatewayClientService.get<GlobalQuestionsDto>('api/questions/global', {
-      params: { ...request }
+  getGlobalQuestions(userId?: string, categoryIds?: string[]): Observable<GlobalQuestionsDto> {
+    const params: GetGlobalQuestionsRequestDto = {userId, categoryIds};
+    return this.gatewayClientService.get<GlobalQuestionsDto>('/api/questions/global', {
+      params: { ...params }
     });
   }
 

@@ -64,6 +64,11 @@ export interface UserDto {
   roles: string[];
 }
 
+export interface CategoryDto {
+  id: string;
+  name: string;
+}
+
 export interface GlobalQuestionsDto {
   globalQuestions: GlobalQuestionDto[];
 }
