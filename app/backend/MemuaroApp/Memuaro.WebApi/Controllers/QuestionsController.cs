@@ -30,8 +30,16 @@ public class QuestionsController : BaseController
     public async Task<ActionResult<GlobalQuestionsDto>> GetGlobalQuestions(
         [FromQuery] GetGlobalQuestionsRequestDto request)
     {
-        var userIds = request.UserId.HasValue ? new HashSet<Guid> {request.UserId.Value} : new HashSet<Guid>();
-        var globalQuestions = await _globalQuestionRepository.GetGlobalQuestionWithExcept(userIds,
+        var globalQuestionIds = new HashSet<Guid>();
+        if (request.UserId.HasValue)
+        {
+            CheckAccessForUser(request.UserId.Value);
+
+            var questions = await _questionRepository.GetForUserAsync(request.UserId.Value);
+            foreach (var question in questions)
+                globalQuestionIds.Add(question.GlobalQuestionId);
+        }
+        var globalQuestions = await _globalQuestionRepository.GetGlobalQuestionWithExcept(globalQuestionIds,
             request.CategoryIds?.ToHashSet());
 
         var globalQuestionsDto = globalQuestions
