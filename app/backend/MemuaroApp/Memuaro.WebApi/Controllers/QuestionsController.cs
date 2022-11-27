@@ -1,5 +1,4 @@
 ﻿using Memuaro.Auth;
-using Memuaro.Persistance.Client;
 using Memuaro.Persistance.Entities;
 using Memuaro.Persistance.Models;
 using Memuaro.Persistance.Repositories.GlobalQuestionRepository;
@@ -8,7 +7,6 @@ using Memuaro.WebApi.Dtos.Question;
 using Memuaro.WebApi.Exceptions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using MongoDB.Driver;
 
 namespace Memuaro.WebApi.Controllers;
 
@@ -45,23 +43,28 @@ public class QuestionsController : BaseController
 
     [HttpGet]
     [Route("new")]
-    public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId, [FromQuery] Guid globalQuestionId)
+    public async Task<ActionResult<QuestionsDto>> GetNewQuestions([FromQuery] Guid userId, [FromQuery] Guid[] globalQuestionIds)
     {
         CheckAccessForUser(userId);
 
-        var globalQuestion = await _globalQuestionRepository.GetAsync(globalQuestionId);
-        if (globalQuestion == null)
-            throw new NotFoundException(nameof(GlobalQuestion), globalQuestionId);
-
-        var userQuestion = new Question
+        var questions = new List<QuestionDto>();
+        foreach (var globalQuestionId in globalQuestionIds)
         {
-            Id = Guid.NewGuid(), GlobalQuestionId = globalQuestion.Id, Title = globalQuestion.Title,
-            CategoryId = globalQuestion.CategoryId, UserId = userId, Status = Status.Unanswered
-        };
+            var globalQuestion = await _globalQuestionRepository.GetAsync(globalQuestionId);
+            if (globalQuestion == null)
+                continue;
 
-        await _questionRepository.CreateAsync(userQuestion);
+            var userQuestion = new Question
+            {
+                Id = Guid.NewGuid(), GlobalQuestionId = globalQuestion.Id, Title = globalQuestion.Title,
+                CategoryId = globalQuestion.CategoryId, UserId = userId, Status = Status.Unanswered
+            };
+            
+            await _questionRepository.CreateAsync(userQuestion);
+            questions.Add(new QuestionDto(userQuestion));
+        }
 
-        return Ok(new QuestionDto(userQuestion));
+        return Ok(new QuestionsDto {Questions = questions});
     }
 
     [HttpGet]

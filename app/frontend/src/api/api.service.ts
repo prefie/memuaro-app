@@ -26,9 +26,9 @@ export class ApiService {
     return this.gatewayClientService.login(idToken);
   }
 
-  getNewQuestion(userId: string, globalQuestionId: string): Observable<QuestionDto> {
+  getNewQuestion(userId: string, globalQuestionIds: string[]): Observable<QuestionDto> {
     return this.gatewayClientService.get<QuestionDto>('/api/questions/new', {
-      params: { userId, globalQuestionId }
+      params: { userId, globalQuestionIds }
     });
   }
 

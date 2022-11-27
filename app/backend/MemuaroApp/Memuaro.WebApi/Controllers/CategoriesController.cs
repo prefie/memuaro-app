@@ -43,4 +43,16 @@ public class CategoriesController : BaseController
 
         return Ok(new CategoryDto(result));
     }
+
+    [HttpPost]
+    [Authorize(Roles = "Admin")]
+    [Route("new")]
+    public async Task<ActionResult<CategoryDto>> AddCategory([FromBody] AddCategoryRequestDto request)
+    {
+        var category = new Category {Id = Guid.NewGuid(), Name = request.Name};
+
+        await _categoryRepository.CreateAsync(category);
+
+        return Ok(category);
+    }
 }
