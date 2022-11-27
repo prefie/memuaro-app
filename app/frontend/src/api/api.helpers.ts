@@ -1,6 +1,7 @@
-import { AppHttpHeaders, HttpOptions } from './api.models';
-import { getCookie } from '../app/common/functions';
 import { HttpResponse } from '@angular/common/http';
+import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../app/common/constants';
+import { getCookie } from '../app/common/functions';
+import { AppHttpHeaders, HttpOptions } from './api.models';
 
 export class ApiException extends Error {
   override message: string;
@@ -36,7 +37,7 @@ export function throwException(message: string, status: number, response: string
 
 export function getTransformHeaders(options?: HttpOptions): AppHttpHeaders {
   const defaultHeaders = {
-    Authorization: `Bearer ${getCookie('accessToken')}`,
+    Authorization: `Bearer ${getCookie(ACCESS_TOKEN_COOKIE_NAME)}`,
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   };
@@ -54,7 +55,7 @@ export function getHandledResponse<T>(response: HttpResponse<T>): T {
 
 export function getTokens(): string {
   return JSON.stringify({
-    accessToken: getCookie('accessToken'),
-    refreshToken: getCookie('refreshToken')
+    accessToken: getCookie(ACCESS_TOKEN_COOKIE_NAME),
+    refreshToken: getCookie(REFRESH_TOKEN_COOKIE_NAME)
   });
 }

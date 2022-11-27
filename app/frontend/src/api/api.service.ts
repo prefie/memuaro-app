@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { GatewayClientService } from './gateway-client.service';
+import { Observable } from 'rxjs';
 import {
   AnswerRequestDto,
   GlobalQuestionRequestDto,
@@ -8,8 +8,7 @@ import {
   TokensDto,
   UserDto
 } from './api.models';
-import { Observable, tap } from 'rxjs';
-import { setCookie } from '../app/common/functions';
+import { GatewayClientService } from './gateway-client.service';
 
 @Injectable({
   providedIn: 'root'
@@ -18,12 +17,7 @@ export class ApiService {
   constructor(private readonly gatewayClientService: GatewayClientService) {}
 
   login(idToken: string): Observable<TokensDto> {
-    return this.gatewayClientService.post<TokensDto>('/api/auth/login', { idToken }).pipe(
-      tap((tokensDto) => {
-        setCookie('accessToken', tokensDto.accessToken, 10);
-        setCookie('refreshToken', tokensDto.refreshToken, 10);
-      })
-    );
+    return this.gatewayClientService.login(idToken);
   }
 
   getNewQuestion(userId: string): Observable<QuestionDto> {

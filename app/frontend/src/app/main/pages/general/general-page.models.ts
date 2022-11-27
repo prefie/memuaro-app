@@ -1,4 +1,4 @@
-import { AngularEditorConfig } from "@kolkov/angular-editor";
+import { AngularEditorConfig } from '@kolkov/angular-editor';
 
 export enum QuestionStatus {
   UNANSWERED = 'Unanswered',
@@ -14,6 +14,6 @@ export const ANGULAR_EDITOR_CONFIG_DEFAULT: AngularEditorConfig = {
   placeholder: 'Пишите свой ответ здесь...',
   translate: 'no',
   defaultParagraphSeparator: 'p',
-  toolbarHiddenButtons: [['insertVideo', 'insertImage', 'justifyLeft', 'justifyRight', 'justifyCenter', 'justifyFull', 'customClasses']],
+  toolbarHiddenButtons: [['insertVideo', 'insertImage', 'justifyLeft', 'justifyRight', 'justifyCenter', 'justifyFull', 'customClasses', 'link', 'unlink']],
   customClasses: []
 };

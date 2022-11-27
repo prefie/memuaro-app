@@ -1,13 +1,14 @@
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { Router, RouterLink } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { SvgIconComponent } from '../svg-icon/svg-icon.component';
+import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
+import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
 import { Observable } from 'rxjs';
 import { UserDto } from '../../../api/api.models';
-import { NzDropDownModule } from "ng-zorro-antd/dropdown";
-import { Router, RouterLink } from "@angular/router";
-import { deleteCookie } from "../../common/functions";
+import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../../common/constants';
+import { deleteCookie } from '../../common/functions';
+import { SvgIconComponent } from '../svg-icon/svg-icon.component';
 
 @Component({
   selector: 'app-header',
@@ -23,8 +24,8 @@ export class HeaderComponent {
   constructor(private readonly router: Router) {}
 
   logout(): void {
-    deleteCookie('accessToken');
-    deleteCookie('refreshToken');
+    deleteCookie(ACCESS_TOKEN_COOKIE_NAME);
+    deleteCookie(REFRESH_TOKEN_COOKIE_NAME);
     this.router.navigate(['auth']).then();
   }
 }
