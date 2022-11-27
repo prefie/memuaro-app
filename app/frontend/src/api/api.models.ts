@@ -27,6 +27,7 @@ export interface QuestionDto {
   title: string;
   userId: string;
   answer?: string;
+  categoryId: string;
   status: QuestionStatus;
 }
 
@@ -39,8 +40,20 @@ export interface AnswerRequestDto {
   newStatus?: QuestionStatus;
 }
 
-export interface GlobalQuestionRequestDto {
+export interface CreateGlobalQuestionRequestDto {
   title: string;
+  categoryId?: string;
+}
+
+export interface AddQuestionRequestDto {
+  userId: string;
+  title: string;
+}
+
+export interface GlobalQuestionDto {
+  id: string;
+  title: string;
+  categoryId: string;
 }
 
 export interface UserDto {
@@ -49,4 +62,22 @@ export interface UserDto {
   name?: string;
   photoUrl?: string;
   roles: string[];
+}
+
+export interface GlobalQuestionsDto {
+  globalQuestions: GlobalQuestionDto[];
+}
+
+export interface GetGlobalQuestionsRequestDto {
+  userId?: string;
+  categoryIds?: string[];
+}
+
+export interface CategoryDto {
+  id: string;
+  name: string;
+}
+
+export interface CategoriesDto {
+  categories: CategoryDto[];
 }

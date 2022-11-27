@@ -5,6 +5,7 @@ using Memuaro.Auth;
 using Memuaro.Auth.Settings;
 using Memuaro.Persistance;
 using Memuaro.Persistance.Client;
+using Memuaro.Persistance.Repositories.CategoryRepository;
 using Memuaro.Persistance.Repositories.GlobalQuestionRepository;
 using Memuaro.Persistance.Repositories.QuestionRepository;
 using Memuaro.Persistance.Repositories.UserRepository;
@@ -57,6 +58,7 @@ builder.Services.AddSingleton<IDatabaseClient, DatabaseClient>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
 builder.Services.AddSingleton<IQuestionRepository, QuestionRepository>();
 builder.Services.AddSingleton<IGlobalQuestionRepository, GlobalQuestionRepository>();
+builder.Services.AddSingleton<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSingleton<AuthProvider>();
 
 builder.Services.AddAuthentication(item =>

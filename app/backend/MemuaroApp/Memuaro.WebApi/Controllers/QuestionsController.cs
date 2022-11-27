@@ -15,56 +15,53 @@ namespace Memuaro.WebApi.Controllers;
 [Authorize]
 public class QuestionsController : BaseController
 {
-    private readonly IDatabaseClient _databaseClient;
     private readonly IGlobalQuestionRepository _globalQuestionRepository;
     private readonly IQuestionRepository _questionRepository;
 
     public QuestionsController(
-        IDatabaseClient databaseClient,
         IGlobalQuestionRepository globalQuestionRepository,
         IQuestionRepository questionRepository,
         AuthProvider authProvider) : base(authProvider)
     {
-        _databaseClient = databaseClient;
         _globalQuestionRepository = globalQuestionRepository;
         _questionRepository = questionRepository;
     }
 
     [HttpGet]
+    [Route("global")]
+    public async Task<ActionResult<GlobalQuestionsDto>> GetGlobalQuestions(
+        [FromQuery] GetGlobalQuestionsRequestDto request)
+    {
+        var userIds = request.UserId.HasValue ? new HashSet<Guid> {request.UserId.Value} : new HashSet<Guid>();
+        var globalQuestions = await _globalQuestionRepository.GetGlobalQuestionWithExcept(userIds,
+            request.CategoryIds?.ToHashSet());
+
+        var globalQuestionsDto = globalQuestions
+            .Select(gq => new GlobalQuestionDto(gq))
+            .ToList();
+
+        return Ok(new GlobalQuestionsDto {GlobalQuestions = globalQuestionsDto});
+    }
+
+    [HttpGet]
     [Route("new")]
-    public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId)
+    public async Task<ActionResult<QuestionDto>> GetNewQuestion([FromQuery] Guid userId, [FromQuery] Guid globalQuestionId)
     {
         CheckAccessForUser(userId);
 
-        var newGlobalQuestion = await _globalQuestionRepository.GetRandomGlobalQuestionForUser(userId);
+        var globalQuestion = await _globalQuestionRepository.GetAsync(globalQuestionId);
+        if (globalQuestion == null)
+            throw new NotFoundException(nameof(GlobalQuestion), globalQuestionId);
 
-        if (newGlobalQuestion == null)
-            throw new NotFoundException("There are no more globalQuestions");
-
-        newGlobalQuestion.UserIds ??= new List<Guid>();
-
-        newGlobalQuestion.UserIds.Add(userId);
         var userQuestion = new Question
-            {Id = Guid.NewGuid(), Title = newGlobalQuestion.Title, UserId = userId, Status = Status.Unanswered};
+        {
+            Id = Guid.NewGuid(), GlobalQuestionId = globalQuestion.Id, Title = globalQuestion.Title,
+            CategoryId = globalQuestion.CategoryId, UserId = userId, Status = Status.Unanswered
+        };
 
-        using var session = _databaseClient.GetSession();
-        var transactionOptions = new TransactionOptions(
-            readPreference: ReadPreference.Primary,
-            readConcern: ReadConcern.Local,
-            writeConcern: WriteConcern.WMajority);
+        await _questionRepository.CreateAsync(userQuestion);
 
-        var cancellationToken = CancellationToken.None;
-        var result = session.WithTransaction(
-            (s, ct) =>
-            {
-                _globalQuestionRepository.UpdateAsync(newGlobalQuestion.Id, newGlobalQuestion);
-                _questionRepository.CreateAsync(userQuestion);
-                return userQuestion;
-            },
-            transactionOptions,
-            cancellationToken);
-
-        return Ok(new QuestionDto(result));
+        return Ok(new QuestionDto(userQuestion));
     }
 
     [HttpGet]
@@ -75,14 +72,7 @@ public class QuestionsController : BaseController
 
         var allQuestions = await _questionRepository.GetForUserAsync(userId);
         var questions = allQuestions
-            .Select(question => new QuestionDto
-            {
-                Id = question.Id,
-                Answer = question.Answer,
-                Title = question.Title,
-                UserId = question.UserId,
-                Status = question.Status.ToString()
-            })
+            .Select(question => new QuestionDto(question))
             .ToList();
 
         return Ok(new QuestionsDto {Questions = questions});
@@ -109,12 +99,30 @@ public class QuestionsController : BaseController
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [Route("newGlobalQuestion")]
-    public async Task<IActionResult> CreateNewGlobalQuestion([FromBody] GlobalQuestionRequestDto request)
+    public async Task<ActionResult<GlobalQuestionDto>> CreateNewGlobalQuestion([FromBody] CreateGlobalQuestionRequestDto request)
     {
-        var globalQuestion = new GlobalQuestion {Id = Guid.NewGuid(), Title = request.Title};
+        var globalQuestion = new GlobalQuestion {Id = Guid.NewGuid(), Title = request.Title, CategoryId = request.CategoryId ?? Guid.Parse("ea815826-0c02-e446-a984-00f62a687381")};
         await _globalQuestionRepository.CreateAsync(globalQuestion);
 
-        return NoContent();
+        return Ok(new GlobalQuestionDto(globalQuestion));
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("new")]
+    public async Task<ActionResult<QuestionDto>> CreateNewQuestion([FromBody] AddQuestionRequestDto request)
+    {
+        CheckAccessForUser(request.UserId);
+
+        var question = new Question
+        {
+            Id = Guid.NewGuid(), Title = request.Title, CategoryId = Guid.Parse("ea815826-0c02-e446-a984-00f62a687381"), GlobalQuestionId = Guid.Empty,
+            Status = Status.Unanswered, UserId = request.UserId
+        };
+
+        await _questionRepository.CreateAsync(question);
+
+        return Ok(new QuestionDto(question));
     }
 
     private void CheckAccessForUser(Guid userId)

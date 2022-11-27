@@ -1,12 +1,18 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  AddQuestionRequestDto,
   AnswerRequestDto,
-  GlobalQuestionRequestDto,
+  CategoriesDto,
+  CategoryDto,
+  CreateGlobalQuestionRequestDto,
+  GetGlobalQuestionsRequestDto,
+  GlobalQuestionDto,
+  GlobalQuestionsDto,
   QuestionDto,
   QuestionsDto,
   TokensDto,
-  UserDto
+  UserDto,
 } from './api.models';
 import { GatewayClientService } from './gateway-client.service';
 
@@ -20,9 +26,9 @@ export class ApiService {
     return this.gatewayClientService.login(idToken);
   }
 
-  getNewQuestion(userId: string): Observable<QuestionDto> {
+  getNewQuestion(userId: string, globalQuestionId: string): Observable<QuestionDto> {
     return this.gatewayClientService.get<QuestionDto>('/api/questions/new', {
-      params: { userId }
+      params: { userId, globalQuestionId }
     });
   }
 
@@ -37,12 +43,31 @@ export class ApiService {
     return this.gatewayClientService.patch<QuestionDto>(`/api/questions/${questionId}`, content);
   }
 
-  createNewGlobalQuestion(globalQuestion: GlobalQuestionRequestDto): Observable<void> {
+  createNewGlobalQuestion(globalQuestion: CreateGlobalQuestionRequestDto): Observable<GlobalQuestionDto> {
     const content = JSON.stringify(globalQuestion);
-    return this.gatewayClientService.post<void>('/api/questions/newGlobalQuestion', content);
+    return this.gatewayClientService.post<GlobalQuestionDto>('/api/questions/newGlobalQuestion', content);
+  }
+
+  createNewQuestion(question: AddQuestionRequestDto): Observable<QuestionDto> {
+    const content = JSON.stringify(question);
+    return this.gatewayClientService.post<QuestionDto>('/api/questions/new', content);
   }
 
   getCurrentUser(): Observable<UserDto> {
     return this.gatewayClientService.get<UserDto>('/api/users/current');
+  }
+
+  getGlobalQuestions(request: GetGlobalQuestionsRequestDto): Observable<GlobalQuestionsDto> {
+    return this.gatewayClientService.get<GlobalQuestionsDto>('api/questions/global', {
+      params: { ...request }
+    });
+  }
+
+  getAllCategories(): Observable<CategoriesDto> {
+    return this.gatewayClientService.get<CategoriesDto>('/api/categories');
+  }
+
+  getCategory(categoryId: string): Observable<CategoryDto> {
+    return this.gatewayClientService.get<CategoryDto>(`/api/categories/${categoryId}`);
   }
 }

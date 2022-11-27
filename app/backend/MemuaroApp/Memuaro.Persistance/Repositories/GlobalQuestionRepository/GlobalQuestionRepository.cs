@@ -13,6 +13,16 @@ public class GlobalQuestionRepository : BaseRepository<GlobalQuestion>, IGlobalQ
     {
     }
 
-    public Task<GlobalQuestion> GetRandomGlobalQuestionForUser(Guid userId) =>
-        MongoCollection.Find(globalQuestion => globalQuestion.UserIds == null || globalQuestion.UserIds != null && !globalQuestion.UserIds.Contains(userId)).FirstOrDefaultAsync();
+    public Task<GlobalQuestion> GetRandomGlobalQuestionWithExcept(HashSet<Guid> exceptIds) =>
+        MongoCollection.Find(globalQuestion => !exceptIds.Contains(globalQuestion.Id)).FirstOrDefaultAsync();
+
+    public Task<List<GlobalQuestion>> GetAllGlobalQuestions() => MongoCollection.Find(_ => true).ToListAsync();
+
+    public Task<List<GlobalQuestion>> GetGlobalQuestionWithExcept(HashSet<Guid>? exceptIds = null, HashSet<Guid>? categories = null)
+    {
+        exceptIds ??= new HashSet<Guid>();
+        return categories is {Count: > 0}
+            ? MongoCollection.Find(gq => !exceptIds.Contains(gq.Id) && categories.Contains(gq.CategoryId)).ToListAsync()
+            : MongoCollection.Find(gq => !exceptIds.Contains(gq.Id)).ToListAsync();
+    }
 }

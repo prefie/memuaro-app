@@ -7,6 +7,7 @@ public class QuestionDto
     public Guid UserId { get; set; }
     public string? Answer { get; set; }
     public string? Status { get; set; }
+    public Guid CategoryId { get; set; }
 
     public QuestionDto(Persistance.Entities.Question question)
     {
@@ -15,6 +16,7 @@ public class QuestionDto
         UserId = question.UserId;
         Answer = question.Answer;
         Status = question.Status.ToString();
+        CategoryId = question.CategoryId;
     }
 
     public QuestionDto()
