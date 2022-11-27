@@ -69,7 +69,7 @@ export class GeneralPageComponent implements OnDestroy {
   getNewQuestion(): void {
     this.user$.pipe(
       tap(() => this.loading$.next(true)),
-      switchMap((user) => this.apiService.getNewQuestion(user.id)),
+      switchMap((user) => this.apiService.getNewQuestion(user.id, "")),
       take(1),
       takeUntil(this.destroy$)
     ).subscribe(() => this.update$.next());
