@@ -11,6 +11,7 @@ import { NzModalModule } from 'ng-zorro-antd/modal';
 import { LoaderModule } from '../../../components/loader/loader.module';
 import { NewQuestionRoutingModule } from './new-question-routing.module';
 import { NewQuestionComponent } from './new-question.component';
+import { ImageComponent } from '../../../components/image/image.component';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import { NewQuestionComponent } from './new-question.component';
     NzCheckboxModule,
     NzModalModule,
     NzInputModule,
-    FormsModule
+    FormsModule,
+    ImageComponent
   ]
 })
 export class NewQuestionModule {}

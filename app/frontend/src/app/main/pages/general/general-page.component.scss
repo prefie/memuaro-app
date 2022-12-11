@@ -92,3 +92,41 @@
   display: flex;
   justify-content: space-around;
 }
+
+.general-page__right-panel {
+  align-items: center;
+  background-color: $color-work-space-bg;
+  display: flex;
+  flex-direction: column;
+  gap: 61px;
+  min-height: 960px;
+  padding: 210px 0;
+  width: 956px;
+}
+
+.general-page__text {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-left: 4px;
+  min-height: 50px;
+  width: 426px;
+  white-space: nowrap;
+  height: 22px;
+  line-height: 22px;
+}
+
+.general-page__text-1 {
+  color: $color-text;
+  font-size: 40px;
+  font-weight: 600;
+  min-width: 426px;
+}
+
+.general-page__text-2 {
+  color: $color-text;
+  font-size: 36px;
+  font-weight: 400;
+  min-width: 354px;
+}
