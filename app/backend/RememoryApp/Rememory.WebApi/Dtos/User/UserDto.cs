@@ -1,9 +1,5 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Converters;
+﻿namespace Rememory.WebApi.Dtos.User;
 
-namespace Rememory.WebApi.Dtos.User;
-
-[JsonConverter(typeof(StringEnumConverter))]
 public class UserDto
 {
     public Guid Id { get; set; }
