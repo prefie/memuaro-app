@@ -73,3 +73,32 @@
     color: $color-basic;
   }
 }
+
+.new-question-page__no-questions-container {
+  justify-content: center;
+  align-items: center;
+  background-color: $color-work-space-bg;
+  display: flex;
+  flex-direction: column;
+  gap: 10vh;
+}
+
+.new-question-page__text {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  white-space: nowrap;
+  line-height: 45px;
+  color: $color-text;
+}
+
+.new-question-page__text-main {
+  font-size: 36px;
+  font-weight: 600;
+}
+
+.new-question-page__text-addition {
+  font-size: 30px;
+  font-weight: 400;
+}
+

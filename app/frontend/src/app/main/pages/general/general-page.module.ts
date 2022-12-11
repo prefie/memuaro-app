@@ -15,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 import { NzCheckboxModule } from 'ng-zorro-antd/checkbox';
 import { LoaderModule } from '../../../components/loader/loader.module';
 import { NzNotificationModule } from 'ng-zorro-antd/notification';
+import { ImageComponent } from '../../../components/image/image.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { NzNotificationModule } from 'ng-zorro-antd/notification';
     AngularEditorModule,
     NzCheckboxModule,
     LoaderModule,
-    NzNotificationModule
+    NzNotificationModule,
+    ImageComponent
   ]
 })
 export class GeneralPageModule { }

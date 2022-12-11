@@ -80,7 +80,13 @@
 
     <ng-template #noQuestion>
       <div class="full-width full-height flex-center">
-        Выберите вопрос, на который хотите ответить :)
+        <div class="general-page__no-questions-container">
+          <app-image width="466px" height="340px" alt="there is no questions" imageName="no-question-general.svg"></app-image>
+          <div class="general-page__text">
+            <span class="general-page__text-main">Здесь пока ничего нет</span>
+            <span class="general-page__text-addition">Выберите категорию</span>
+          </div>
+        </div>
       </div>
     </ng-template>
   </nz-layout>
