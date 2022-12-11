@@ -8,7 +8,6 @@ import { CommonModule } from '@angular/common';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CommonModule]
 })
-
 export class ImageComponent {
   @HostBinding('style.width') @Input() width = '100%';
   @HostBinding('style.height') @Input() height = '100%';
