@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.WebApi", "Rememory.WebApi\Rememory.WebApi.csproj", "{AAA9001C-D299-43D6-A24B-CF6731579C76}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.Persistance", "Rememory.Persistance\Rememory.Persistance.csproj", "{325D653E-0612-4D9D-AB9B-051AE0A83FDA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.Auth", "Rememory.Auth\Rememory.Auth.csproj", "{8B0F8649-3889-42F0-8FB7-9049A6D1EB72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.Bot", "Rememory.Bot\Rememory.Bot.csproj", "{06771E21-B129-43EA-A014-8E4410995016}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AAA9001C-D299-43D6-A24B-CF6731579C76}.Release|Any CPU.Build.0 = Release|Any CPU
+		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{325D653E-0612-4D9D-AB9B-051AE0A83FDA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B0F8649-3889-42F0-8FB7-9049A6D1EB72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B0F8649-3889-42F0-8FB7-9049A6D1EB72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B0F8649-3889-42F0-8FB7-9049A6D1EB72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B0F8649-3889-42F0-8FB7-9049A6D1EB72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06771E21-B129-43EA-A014-8E4410995016}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06771E21-B129-43EA-A014-8E4410995016}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06771E21-B129-43EA-A014-8E4410995016}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06771E21-B129-43EA-A014-8E4410995016}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

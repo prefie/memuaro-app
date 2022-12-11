@@ -86,3 +86,9 @@ export interface CategoryDto {
 export interface CategoriesDto {
   categories: CategoryDto[];
 }
+
+export interface NotificationSettingsDto {
+  email?: string;
+  telegramName?: string;
+  periodInDays: number;
+}

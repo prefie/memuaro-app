@@ -7,6 +7,7 @@ import {
   GetGlobalQuestionsRequestDto,
   GlobalQuestionDto,
   GlobalQuestionsDto,
+  NotificationSettingsDto,
   QuestionDto,
   QuestionsDto,
   TokensDto,
@@ -68,5 +69,15 @@ export class ApiService {
 
   getCategory(categoryId: string): Observable<CategoryDto> {
     return this.gatewayClientService.get<CategoryDto>(`/api/categories/${categoryId}`);
+  }
+
+  saveNotificationSettings(userId: string, settings: NotificationSettingsDto): Observable<NotificationSettingsDto> {
+    const content = JSON.stringify(settings);
+    return this.gatewayClientService.post<NotificationSettingsDto>(
+      `/api/notifications/settings/${userId}`, content);
+  }
+
+  getNotificationSettings(userId: string): Observable<NotificationSettingsDto> {
+    return this.gatewayClientService.get<NotificationSettingsDto>(`/api/notifications/settings/${userId}`);
   }
 }
