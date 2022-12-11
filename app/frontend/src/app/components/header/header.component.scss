@@ -11,7 +11,7 @@
 }
 
 .header__app-logo {
-  width: 105px;
+  width: 125px;
   height: 27px;
 }
 
@@ -20,11 +20,9 @@
   align-items: center;
   height: 100%;
   margin: 0;
+  gap: 25px;
 }
 
-.header__user-name {
-  font-size: 20px;
-  line-height: 22px;
-  font-weight: 400;
-  color: $color-text;
+.header__icon {
+  font-size: 24px
 }
