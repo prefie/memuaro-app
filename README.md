@@ -1,4 +1,4 @@
-# Мемуаро App
+# ReMemory App
 
 Вихлянцева Дарья - DaryaVkh (frontend)
 
