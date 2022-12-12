@@ -14,4 +14,8 @@ public class NotificationSettingsDto
         TelegramName = settings.TelegramName;
         PeriodInDays = settings.PeriodInDays;
     }
+
+    public NotificationSettingsDto()
+    {
+    }
 }
