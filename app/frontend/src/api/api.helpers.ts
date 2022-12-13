@@ -35,9 +35,9 @@ export function throwException(message: string, status: number, response: string
   }
 }
 
-export function getTransformHeaders(options?: HttpOptions): AppHttpHeaders {
+export function getTransformHeaders(options?: HttpOptions, accessToken?: string): AppHttpHeaders {
   const defaultHeaders = {
-    Authorization: `Bearer ${getCookie(ACCESS_TOKEN_COOKIE_NAME)}`,
+    Authorization: `Bearer ${accessToken ?? getCookie(ACCESS_TOKEN_COOKIE_NAME)}`,
     'Content-Type': 'application/json',
     'Accept': 'application/json'
   };

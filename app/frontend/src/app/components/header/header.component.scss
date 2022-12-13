@@ -26,3 +26,38 @@
 .header__icon {
   font-size: 24px
 }
+
+.header__settings-content-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: $color-text;
+}
+
+.header__settings-modal-header {
+  margin-bottom: 50px;
+}
+
+.header__setting-modal-form {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  width: 100%;
+  padding: 0 10% 5%;
+}
+
+.header__setting-label {
+  min-width: 15%;
+  cursor: default;
+}
+
+.header__setting-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  width: 100%;
+  color: $color-text;
+  font-size: 18px;
+  line-height: 22px;
+}

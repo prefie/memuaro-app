@@ -17,30 +17,30 @@ export class GatewayClientService {
               private readonly router: Router) {}
 
   get<T>(commandUrl: string, options?: HttpOptions): Observable<T> {
-    const request: Observable<HttpResponse<T>> = this.http.get<T>(commandUrl, {
+    const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.get<T>(commandUrl, {
       ...options,
       observe: 'response',
-      headers: getTransformHeaders(options)
+      headers: getTransformHeaders(options, accessToken)
     });
 
     return this.getRequest(request);
   }
 
   post<T>(commandUrl: string, body?: any | null, options?: HttpOptions): Observable<T> {
-    const request: Observable<HttpResponse<T>> = this.http.post<T>(commandUrl, body, {
+    const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.post<T>(commandUrl, body, {
       ...options,
       observe: 'response',
-      headers: getTransformHeaders(options)
+      headers: getTransformHeaders(options, accessToken)
     });
 
     return this.getRequest(request);
   }
 
   patch<T>(commandUrl: string, body: any | null, options?: HttpOptions): Observable<T> {
-    const request: Observable<HttpResponse<T>> = this.http.patch<T>(commandUrl, body, {
+    const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.patch<T>(commandUrl, body, {
       ...options,
       observe: 'response',
-      headers: getTransformHeaders(options)
+      headers: getTransformHeaders(options, accessToken)
     });
 
     return this.getRequest(request);
@@ -64,7 +64,7 @@ export class GatewayClientService {
     );
   }
 
-  private getRequest<T>(request: Observable<HttpResponse<T>>): Observable<T> {
+  private getRequest<T>(request: (accessToken?: string) => Observable<HttpResponse<T>>): Observable<T> {
     const accessToken = getCookie(ACCESS_TOKEN_COOKIE_NAME);
 
     if (!accessToken) {
@@ -72,7 +72,7 @@ export class GatewayClientService {
     }
 
     if ((jwtDecode(accessToken) as DecodedJwtToken).exp * 1000 > Date.now()) {
-      return request.pipe(
+      return request().pipe(
         catchError(() => of(null)),
         filter((response): response is HttpResponse<T> => !!response),
         map((response) => getHandledResponse(response))
@@ -80,7 +80,7 @@ export class GatewayClientService {
     }
 
     return this.refreshToken().pipe(
-      switchMap((result) => result ? request : of(null)),
+      switchMap((result) => result ? request(result.accessToken) : of(null)),
       filter((response): response is HttpResponse<T> => !!response),
       map((response) => getHandledResponse(response))
     );
