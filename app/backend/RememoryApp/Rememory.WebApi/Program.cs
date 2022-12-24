@@ -14,7 +14,10 @@ using Microsoft.OpenApi.Models;
 using Newtonsoft.Json.Converters;
 using Rememory.Bot;
 using Rememory.Bot.Settings;
+using Rememory.Email;
+using Rememory.Email.Settings;
 using Rememory.Persistance.Repositories.NotificationSettingsRepository;
+using Rememory.WebApi.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,6 +58,7 @@ builder.Services.Configure<DatabaseConfig>(builder.Configuration.GetSection("Dat
 builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSettings"));
 builder.Services.Configure<GoogleSettings>(builder.Configuration.GetSection("GoogleSettings"));
 builder.Services.Configure<BotSettings>(builder.Configuration.GetSection("BotSettings"));
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
 builder.Services.AddSingleton<IDatabaseClient, DatabaseClient>();
 builder.Services.AddSingleton<IUserRepository, UserRepository>();
@@ -63,6 +67,7 @@ builder.Services.AddSingleton<IGlobalQuestionRepository, GlobalQuestionRepositor
 builder.Services.AddSingleton<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSingleton<INotificationSettingsRepository, NotificationSettingsRepository>();
 builder.Services.AddSingleton<IBot, TelegramBot>();
+builder.Services.AddSingleton<IEmailClient, EmailClient>();
 builder.Services.AddSingleton<AuthProvider>();
 builder.Services.AddAuthentication(item =>
 {
@@ -95,6 +100,8 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddHostedService<NotificationService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -102,8 +109,6 @@ app.UseSwagger();
 app.UseSwaggerUI(); // Временно используем всегда
 
 app.UseMiddleware<CustomExceptionHandlerMiddleware>();
-
-app.UseHttpsRedirection();
 
 app.UseCors("AllowAll");
 

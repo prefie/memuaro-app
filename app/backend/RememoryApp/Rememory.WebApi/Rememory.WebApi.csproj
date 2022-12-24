@@ -17,6 +17,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Rememory.Auth\Rememory.Auth.csproj" />
       <ProjectReference Include="..\Rememory.Bot\Rememory.Bot.csproj" />
+      <ProjectReference Include="..\Rememory.Email\Rememory.Email.csproj" />
       <ProjectReference Include="..\Rememory.Persistance\Rememory.Persistance.csproj" />
     </ItemGroup>
 

@@ -8,6 +8,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.Auth", "Rememory.A
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.Bot", "Rememory.Bot\Rememory.Bot.csproj", "{06771E21-B129-43EA-A014-8E4410995016}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rememory.Email", "Rememory.Email\Rememory.Email.csproj", "{CF21CA9D-4D88-49E9-BA9E-797D12ED543A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -30,5 +32,9 @@ Global
 		{06771E21-B129-43EA-A014-8E4410995016}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06771E21-B129-43EA-A014-8E4410995016}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06771E21-B129-43EA-A014-8E4410995016}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CF21CA9D-4D88-49E9-BA9E-797D12ED543A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF21CA9D-4D88-49E9-BA9E-797D12ED543A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF21CA9D-4D88-49E9-BA9E-797D12ED543A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF21CA9D-4D88-49E9-BA9E-797D12ED543A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

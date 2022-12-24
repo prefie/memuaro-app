@@ -1,3 +1,4 @@
+using MongoDB.Driver;
 using Rememory.Persistance.Client;
 using Rememory.Persistance.Entities;
 using Rememory.Persistance.Repositories.Base;
@@ -22,4 +23,10 @@ public class NotificationSettingsRepository : BaseRepository<NotificationSetting
 
         return settings;
     }
+
+    public Task<NotificationSettings> GetByTelegramName(string? name) =>
+        MongoCollection.Find(entity => entity.TelegramId == name).FirstOrDefaultAsync();
+
+    public Task<List<NotificationSettings>> GetByLessOrEqualDateNextNotification(DateTime datetime) =>
+        MongoCollection.Find(entity => entity.DateNextNotification <= datetime).ToListAsync();
 }
