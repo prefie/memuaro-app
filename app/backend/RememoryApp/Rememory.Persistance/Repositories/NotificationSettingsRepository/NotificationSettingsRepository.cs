@@ -25,7 +25,7 @@ public class NotificationSettingsRepository : BaseRepository<NotificationSetting
     }
 
     public Task<NotificationSettings> GetByTelegramName(string? name) =>
-        MongoCollection.Find(entity => entity.TelegramId == name).FirstOrDefaultAsync();
+        MongoCollection.Find(entity => entity.TelegramName == name).FirstOrDefaultAsync();
 
     public Task<List<NotificationSettings>> GetByLessOrEqualDateNextNotification(DateTime datetime) =>
         MongoCollection.Find(entity => entity.DateNextNotification <= datetime).ToListAsync();

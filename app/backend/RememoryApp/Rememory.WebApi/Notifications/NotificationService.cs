@@ -33,7 +33,7 @@ public class NotificationService : IHostedService, IDisposable
         var task = Task.Run(async () =>
         {
             var settingsList =
-                await _notificationSettingsRepository.GetByLessOrEqualDateNextNotification(DateTime.UtcNow.Date);
+                await _notificationSettingsRepository.GetByLessOrEqualDateNextNotification(DateTime.UtcNow);
             foreach (var settings in settingsList)
             {
                 try
@@ -42,7 +42,7 @@ public class NotificationService : IHostedService, IDisposable
                         await _bot.SendMessage(settings.TelegramId, "Вы получили это сообщение, потому что подписались на уведомления от Rememory. Пора ответить на новый вопрос!");
                     if (settings.Email != null)
                         await _emailClient.SendMessage(settings.Email, "Вы получили это сообщение, потому что подписались на уведомления от Rememory. Пора ответить на новый вопрос!");
-                    settings.DateNextNotification = DateTime.UtcNow.Date.AddDays(settings.PeriodInDays);
+                    settings.DateNextNotification = DateTime.UtcNow.AddDays(settings.PeriodInDays);
                     await _notificationSettingsRepository.UpdateAsync(settings.Id, settings);
                 }
                 catch (Exception ex)
