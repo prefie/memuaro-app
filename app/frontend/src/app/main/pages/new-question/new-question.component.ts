@@ -31,7 +31,7 @@ export class NewQuestionComponent implements OnDestroy {
   readonly categories$: Observable<CategoryDto[]>;
   readonly questions$: Observable<GlobalQuestionDto[]>;
   readonly activeCategory$ = new BehaviorSubject<CategoryDto | null>(null);
-  readonly loading$ = new BehaviorSubject<boolean>(false);
+  readonly loading$ = new BehaviorSubject<boolean>(true);
   readonly isModalOpen$ = new BehaviorSubject<boolean>(false);
 
   private readonly update$ = new Subject<void>();
@@ -43,12 +43,12 @@ export class NewQuestionComponent implements OnDestroy {
 
     this.categories$ = apiService.getAllCategories().pipe(
       map((categoriesDto) => categoriesDto.categories.filter((category) => category.name !== 'Свои вопросы')),
+      tap(() => this.loading$.next(false)),
       shareReplay({ bufferSize: 1, refCount: true })
     );
 
     this.questions$ = this.update$.pipe(
-      startWith(0),
-      tap(() => this.loading$.next(true)),
+      startWith([]),
       switchMap(() => combineLatest([this.user$, this.activeCategory$])),
       switchMap(([user, activeCategory]) => activeCategory
         ? apiService.getGlobalQuestions(user.id, [activeCategory.id])
@@ -105,6 +105,11 @@ export class NewQuestionComponent implements OnDestroy {
   closeNewQuestionModal(): void {
     this.newQuestion = '';
     this.isModalOpen$.next(false);
+  }
+
+  changeActiveCategory(category: CategoryDto): void {
+    this.loading$.next(true);
+    this.activeCategory$.next(category);
   }
 
   ngOnDestroy(): void {

@@ -52,9 +52,10 @@ export class GeneralPageComponent implements OnDestroy {
       switchMap(() => this.user$),
       switchMap((user) => apiService.getAllQuestionsForUser(user.id)),
       map(({ questions }) => {
-        const searchRequest = this.searchRequest.toLowerCase().trim();
+        const searchRequestWords = this.searchRequest.toLowerCase().trim().split(' ');
         return questions.reduce<Record<QuestionStatus, QuestionDto[]>>((questionsByStatus, question) => {
-          if (question.title.toLowerCase().includes(searchRequest)) {
+          const questionTitle = question.title.toLowerCase();
+          if (searchRequestWords.every((word) => questionTitle.includes(word))) {
             questionsByStatus[question.status ? question.status as QuestionStatus : QuestionStatus.UNANSWERED].push(question);
           }
           return questionsByStatus;
@@ -76,25 +77,39 @@ export class GeneralPageComponent implements OnDestroy {
 
   saveAnswer(question: QuestionDto): void {
     const newStatus = this.isActiveQuestionPartlyAnswered$.getValue() ? QuestionStatus.PARTLY_ANSWERED : QuestionStatus.ANSWERED;
-    this.loading$.next(true);
-    this.apiService.giveAnswer(question.id, { answer: `${question.answer}`, newStatus }).pipe(
-      take(1),
-      takeUntil(this.destroy$)
-    ).subscribe(() => {
-      this.update$.next();
+    if (question.answer?.trim()) {
+      this.loading$.next(true);
+      this.apiService.giveAnswer(question.id, { answer: `${question.answer}`, newStatus }).pipe(
+        take(1),
+        takeUntil(this.destroy$)
+      ).subscribe(() => {
+        this.update$.next();
+        this.notification.create(
+          'success',
+          'Ваш ответ успешно сохранён',
+          '',
+          { nzPlacement: 'bottomRight' }
+        );
+        this.activeQuestion$.next(null);
+      });
+    } else {
       this.notification.create(
-        'success',
-        'Ваш ответ успешно сохранён',
+        'warning',
+        'Ответ не может быть пустым',
         '',
-        { nzPlacement: 'bottomRight' }
+        { nzPlacement: 'bottomRight', nzDuration: 2000, nzPauseOnHover: false }
       );
-      this.activeQuestion$.next(null);
-    });
+    }
   }
 
   filterQuestionsByRequest(): void {
     this.update$.next();
     this.activeQuestion$.next(null);
+  }
+
+  resetSearchRequest(): void {
+    this.searchRequest = '';
+    this.update$.next();
   }
 
   ngOnDestroy(): void {

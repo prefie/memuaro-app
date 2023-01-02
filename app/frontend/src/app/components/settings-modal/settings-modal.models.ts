@@ -3,22 +3,26 @@ import { SelectOption } from '../../common/interfaces';
 export const SETTINGS_MODAL_PERIOD_OPTIONS: SelectOption<number>[] = [
   {
     value: 14,
-    label: 'Две недели'
+    label: 'раз в две недели'
   },
   {
     value: 7,
-    label: 'Неделю'
+    label: 'раз в неделю'
   },
   {
     value: 5,
-    label: '5 дней'
+    label: 'раз в 5 дней'
   },
   {
     value: 3,
-    label: '3 дня'
+    label: 'раз в 3 дня'
   },
   {
     value: 1,
-    label: 'День'
+    label: 'раз в день'
+  },
+  {
+    value: 0,
+    label: 'никогда'
   }
 ];

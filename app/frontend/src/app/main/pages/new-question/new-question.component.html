@@ -1,5 +1,10 @@
 <nz-layout class="full-width full-height">
   <nz-sider class="new-question-page__side-menu" nzWidth="400px">
+    <a class="new-question-page__back-button" nz-button nzType="link" nzSize="large" [routerLink]="['/', 'app', 'general']">
+      <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
+      Вернуться на главную страницу
+    </a>
+
     <div class="flex-center">
       <button nz-button nzSize="large" nzType="primary" (click)="isModalOpen$.next(true)">
         Добавить свой вопрос
@@ -14,12 +19,19 @@
           <ul>
             <li *ngFor="let category of (categories$ | async)"
                 nz-menu-item [nzSelected]="(activeCategory$ | async)?.id === category.id"
-                (click)="activeCategory$.next(category)">
+                (click)="changeActiveCategory(category)">
               {{category.name}}
             </li>
           </ul>
         </li>
       </ul>
+
+      <div class="flex-center new-question-page__book-button-container">
+        <button class="flex-center" nz-button nzSize="large" nzType="primary">
+          <span class="new-question-page__button-icon" nz-icon nzType="read" nzTheme="outline"></span>
+          Моя книга
+        </button>
+      </div>
     </div>
   </nz-sider>
 
@@ -34,14 +46,10 @@
                           class="new-question-page__question-list-item"
                           [class.checked]="isQuestionChecked(item.id)"
                           (click)="changeCheckedQuestions(!isQuestionChecked(item.id), item.id)">
-              <ul nz-list-item-actions>
-                <nz-list-item-action>
-                  <label nz-checkbox
-                         [nzChecked]="isQuestionChecked(item.id)"
-                         (nzCheckedChange)="changeCheckedQuestions($event, item.id)">
-                  </label>
-                </nz-list-item-action>
-              </ul>
+              <label nz-checkbox
+                     [nzChecked]="isQuestionChecked(item.id)"
+                     (nzCheckedChange)="changeCheckedQuestions($event, item.id)">
+              </label>
               {{ item.title }}
             </nz-list-item>
           </nz-list>

@@ -9,9 +9,16 @@
       </a>
     </div>
 
-    <nz-input-group class="general-page__input-group" nzSearch [nzAddOnAfter]="suffixIconButton">
-      <input type="text" nz-input placeholder="Поиск по слову..." [(ngModel)]="searchRequest"/>
+    <nz-input-group class="general-page__input-group"
+                    nzSearch
+                    [nzAddOnAfter]="suffixIconButton"
+                    [nzSuffix]="suffixIconClean"
+                    (keydown.enter)="filterQuestionsByRequest()">
+      <input type="text" nz-input placeholder="Поиск среди вопросов..." [(ngModel)]="searchRequest"/>
     </nz-input-group>
+    <ng-template #suffixIconClean>
+      <span *ngIf="searchRequest" class="general-page__input-icon clickable" nz-icon nzType="close" (click)="resetSearchRequest()"></span>
+    </ng-template>
     <ng-template #suffixIconButton>
       <button nz-button nzType="default" nzSearch (click)="filterQuestionsByRequest()">
         <span nz-icon nzType="search"></span>
@@ -50,6 +57,13 @@
           </ul>
         </li>
       </ul>
+
+      <div class="flex-center general-page__book-button-container">
+        <button class="flex-center" nz-button nzSize="large" nzType="primary">
+          <span class="general-page__button-icon" nz-icon nzType="read" nzTheme="outline"></span>
+          Моя книга
+        </button>
+      </div>
     </div>
   </nz-sider>
 

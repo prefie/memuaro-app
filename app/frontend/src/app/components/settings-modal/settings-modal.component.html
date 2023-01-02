@@ -1,0 +1,55 @@
+<nz-modal [nzVisible]="isSettingsModalOpen$ | async"
+          [nzWidth]="950"
+          [nzCloseIcon]="closeIcon"
+          [nzFooter]="modalFooter">
+  <div class="settings-modal__content-container" *nzModalContent>
+    <h1 class="settings-modal__header">Настройки</h1>
+
+    <div class="settings-modal__form" [formGroup]="settingsForm">
+      <div class="settings-modal__setting-container">
+        <div class="settings-modal__setting-label">Периодичность получения новых вопросов: </div>
+        <nz-select class="flex-1" formControlName="periodInDays" nzSize="large">
+          <nz-option *ngFor="let option of periodOptions" [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
+        </nz-select>
+      </div>
+
+      <h2 class="settings-modal__h">Где вы хотите получать напоминания о новых вопросах?</h2>
+
+      <div class="settings-modal__setting-container">
+        <nz-switch [ngModel]="hasNotificationEmail$ | async"
+                   (ngModelChange)="hasNotificationEmail$.next($event)"
+                   [ngModelOptions]="{standalone: true}">
+        </nz-switch>
+        <div class="settings-modal__setting-label">Электронная почта</div>
+        <input *ngIf="hasNotificationEmail$ | async"
+               class="flex-1"
+               nz-input
+               formControlName="email"
+               placeholder="Введите адрес электронной почты"
+               nzSize="large"/>
+      </div>
+
+      <div class="settings-modal__setting-container">
+        <nz-switch [ngModel]="hasNotificationTelegram$ | async"
+                   (ngModelChange)="hasNotificationTelegram$.next($event)"
+                   [ngModelOptions]="{standalone: true}">
+        </nz-switch>
+        <div class="settings-modal__setting-label">Telegram</div>
+        <input *ngIf="hasNotificationTelegram$ | async"
+               class="flex-1"
+               nz-input
+               formControlName="telegramName"
+               placeholder="Введите ник в телеграм"
+               nzSize="large"/>
+      </div>
+
+      <div class="settings-modal__hint">Чтобы получать уведомления в Telegram, перейдите в <a class="settings-modal__link" href="https://t.me/RememoryNotificationsBot" target="_blank">бота</a> и нажмите "start"</div>
+    </div>
+  </div>
+</nz-modal>
+
+<ng-template #closeIcon>
+  <button nz-button nzType="text" (click)="isSettingsModalOpen$.next(false)">
+    <span nz-icon nzType="close" nzTheme="outline"></span>
+  </button>
+</ng-template>

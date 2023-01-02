@@ -1,22 +1,20 @@
-import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input, NgZone } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { CommonModule, DOCUMENT } from '@angular/common';
+import { ChangeDetectionStrategy, Component, Inject, Input, NgZone } from '@angular/core';
+import { FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
-import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NzInputModule } from 'ng-zorro-antd/input';
-import { ModalButtonOptions, NzModalModule } from 'ng-zorro-antd/modal';
+import { NzModalModule } from 'ng-zorro-antd/modal';
 import { NzPageHeaderModule } from 'ng-zorro-antd/page-header';
-import { NzSelectModule } from 'ng-zorro-antd/select';
-import { BehaviorSubject, Observable, Subject, switchMap, take, takeUntil } from 'rxjs';
-import { UserDto } from '../../../api/api.models';
+import { CookieService } from 'ngx-cookie-service';
+import { BehaviorSubject, map, Observable, of, Subject, switchMap, take, takeUntil, tap } from 'rxjs';
+import { NotificationSettingsDto, UserDto } from '../../../api/api.models';
 import { ApiService } from '../../../api/api.service';
 import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../../common/constants';
-import { deleteCookie } from '../../common/functions';
+import { LoaderModule } from '../loader/loader.module';
+import { SettingsModalComponent } from '../settings-modal/settings-modal.component';
 import { SvgIconComponent } from '../svg-icon/svg-icon.component';
-import { SETTINGS_MODAL_PERIOD_OPTIONS } from './header.models';
 
 @Component({
   selector: 'app-header',
@@ -32,59 +30,59 @@ import { SETTINGS_MODAL_PERIOD_OPTIONS } from './header.models';
     NzDropDownModule,
     RouterLink,
     NzIconModule,
-    NzInputModule,
-    NzButtonModule,
-    ReactiveFormsModule,
     NzModalModule,
-    NzSelectModule
+    SettingsModalComponent,
+    LoaderModule
   ],
 })
 export class HeaderComponent {
-  @Input() user$?: Observable<UserDto>;
+  @Input() user$: Observable<UserDto | null> = of(null);
 
-  readonly settingsForm = this.fb.group({
-    periodInDays: 0,
-    email: '',
-    telegramName: ''
-  });
-  readonly modalFooter: ModalButtonOptions[]  = [{
-    label: 'Сохранить',
-    size: 'large',
-    type: 'primary',
-    onClick: () => this.saveSettings(this.settingsForm)
-  }];
-  readonly periodOptions = SETTINGS_MODAL_PERIOD_OPTIONS;
+  readonly defaultSettings: NotificationSettingsDto = {
+    periodInDays: 0
+  };
 
+  readonly loading$ = new BehaviorSubject<boolean>(false);
   readonly isSettingsModalOpen$ = new BehaviorSubject<boolean>(false);
+
+  settings$ = new BehaviorSubject<NotificationSettingsDto | null>(null);
 
   private readonly destroy$ = new Subject<void>();
 
   constructor(private readonly router: Router,
               private readonly ngZone: NgZone,
               private readonly fb: FormBuilder,
-              private readonly apiService: ApiService) {}
+              private readonly cookieService: CookieService,
+              private readonly apiService: ApiService,
+              @Inject(DOCUMENT) private document: Document) {}
 
   ngOnInit(): void {
-    this.user$?.pipe(
-      switchMap((user) => this.apiService.getNotificationSettings(user.id)),
-      take(1),
+    this.isSettingsModalOpen$.pipe(
+      tap((isModalOpen) => this.loading$.next(isModalOpen)),
+      switchMap((isModalOpen) => isModalOpen
+        ? this.user$.pipe(
+          switchMap((user) => user ? this.apiService.getNotificationSettings(user.id) : of(null)),
+          map((settings) => settings ?? this.defaultSettings),
+        )
+        : of(null)
+      ),
       takeUntil(this.destroy$)
     ).subscribe((settings) => {
-      if (settings) {
-        this.settingsForm.patchValue(settings);
-      }
+      this.settings$.next(settings);
+      this.loading$.next(false);
     });
   }
 
   logout(): void {
-    deleteCookie(ACCESS_TOKEN_COOKIE_NAME);
-    deleteCookie(REFRESH_TOKEN_COOKIE_NAME);
-    this.ngZone.run(() => this.router.navigate(['auth']).then(() => window.location.reload()));
+    const location = this.document.location;
+    this.cookieService.delete(ACCESS_TOKEN_COOKIE_NAME, '/', location.hostname);
+    this.cookieService.delete(REFRESH_TOKEN_COOKIE_NAME, '/', location.hostname);
+    this.ngZone.run(() => this.router.navigate(['auth']).then(() => location.reload()));
   }
 
-  saveSettings(form: FormGroup): void {
-    this.user$?.pipe(
-      switchMap((user) => this.apiService.saveNotificationSettings(user.id, form.value)),
+  saveSettings(settings: NotificationSettingsDto): void {
+    this.user$.pipe(
+      switchMap((user) => this.apiService.saveNotificationSettings(user!.id, settings)),
       take(1),
       takeUntil(this.destroy$)
     ).subscribe(() => {

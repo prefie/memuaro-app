@@ -2,11 +2,11 @@ import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import jwtDecode from 'jwt-decode';
+import { CookieService } from 'ngx-cookie-service';
 import { catchError, filter, map, Observable, of, switchMap, tap } from 'rxjs';
 import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_TOKEN_COOKIE_NAME } from '../app/common/constants';
-import { getCookie, setCookie } from '../app/common/functions';
 import { DecodedJwtToken } from '../app/common/interfaces';
-import { getHandledResponse, getTokens, getTransformHeaders } from './api.helpers';
+import ApiHelperService from './api-helper.service';
 import { HttpOptions, TokensDto } from './api.models';
 
 @Injectable({
@@ -14,13 +14,15 @@ import { HttpOptions, TokensDto } from './api.models';
 })
 export class GatewayClientService {
   constructor(private readonly http: HttpClient,
-              private readonly router: Router) {}
+              private readonly router: Router,
+              private readonly apiHelper: ApiHelperService,
+              private readonly cookieService: CookieService) {}
 
   get<T>(commandUrl: string, options?: HttpOptions): Observable<T> {
     const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.get<T>(commandUrl, {
       ...options,
       observe: 'response',
-      headers: getTransformHeaders(options, accessToken)
+      headers: this.apiHelper.getTransformHeaders(options, accessToken)
     });
 
     return this.getRequest(request);
@@ -30,7 +32,7 @@ export class GatewayClientService {
     const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.post<T>(commandUrl, body, {
       ...options,
       observe: 'response',
-      headers: getTransformHeaders(options, accessToken)
+      headers: this.apiHelper.getTransformHeaders(options, accessToken)
     });
 
     return this.getRequest(request);
@@ -40,7 +42,7 @@ export class GatewayClientService {
     const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.patch<T>(commandUrl, body, {
       ...options,
       observe: 'response',
-      headers: getTransformHeaders(options, accessToken)
+      headers: this.apiHelper.getTransformHeaders(options, accessToken)
     });
 
     return this.getRequest(request);
@@ -56,16 +58,16 @@ export class GatewayClientService {
     }).pipe(
       catchError(() => of(null)),
       filter((response): response is HttpResponse<TokensDto> => !!response),
-      map((response) => getHandledResponse(response)),
+      map((response) => ApiHelperService.getHandledResponse(response)),
       tap((tokensDto) => {
-        setCookie(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10);
-        setCookie(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10);
+        this.cookieService.set(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10);
+        this.cookieService.set(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10);
       })
     );
   }
 
   private getRequest<T>(request: (accessToken?: string) => Observable<HttpResponse<T>>): Observable<T> {
-    const accessToken = getCookie(ACCESS_TOKEN_COOKIE_NAME);
+    const accessToken = this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME);
 
     if (!accessToken) {
       this.router.navigate(['/auth']).then();
@@ -75,19 +77,19 @@ export class GatewayClientService {
       return request().pipe(
         catchError(() => of(null)),
         filter((response): response is HttpResponse<T> => !!response),
-        map((response) => getHandledResponse(response))
+        map((response) => ApiHelperService.getHandledResponse(response))
       );
     }
 
     return this.refreshToken().pipe(
       switchMap((result) => result ? request(result.accessToken) : of(null)),
       filter((response): response is HttpResponse<T> => !!response),
-      map((response) => getHandledResponse(response))
+      map((response) => ApiHelperService.getHandledResponse(response))
     );
   }
 
   private refreshToken<T>(): Observable<TokensDto | null> {
-    return this.http.post<TokensDto>('/api/auth/refresh', getTokens(), {
+    return this.http.post<TokensDto>('/api/auth/refresh', this.apiHelper.getTokens(), {
       headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json'
@@ -99,8 +101,8 @@ export class GatewayClientService {
       }),
       tap((tokensDto: TokensDto | null) => {
         if (tokensDto) {
-          setCookie(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10);
-          setCookie(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10);
+          this.cookieService.set(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10);
+          this.cookieService.set(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10);
         }
       })
     );

@@ -1,15 +1,16 @@
+import { registerLocaleData } from '@angular/common';
+import { HttpClientModule } from '@angular/common/http';
 import ru from '@angular/common/locales/en';
 import { NgModule } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { NZ_CONFIG, NzConfig } from 'ng-zorro-antd/core/config';
+import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
+import { NzIconModule } from 'ng-zorro-antd/icon';
+import { CookieService } from 'ngx-cookie-service';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NZ_I18N, ru_RU } from 'ng-zorro-antd/i18n';
-import { registerLocaleData } from '@angular/common';
-import { FormsModule } from '@angular/forms';
-import { HttpClientModule } from '@angular/common/http';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { NzIconModule } from 'ng-zorro-antd/icon';
-import { NZ_CONFIG, NzConfig } from 'ng-zorro-antd/core/config';
 
 registerLocaleData(ru);
 
@@ -29,7 +30,8 @@ const ngZorroConfig: NzConfig = {};
   ],
   providers: [
     {provide: NZ_I18N, useValue: ru_RU},
-    {provide: NZ_CONFIG, useValue: ngZorroConfig}
+    {provide: NZ_CONFIG, useValue: ngZorroConfig},
+    CookieService
   ],
   bootstrap: [AppComponent]
 })
