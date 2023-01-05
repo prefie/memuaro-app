@@ -28,10 +28,6 @@
   max-height: calc(100vh - 270px);
 }
 
-.new-question-page__book-button-container {
-  margin-top: 50px;
-}
-
 .new-question-page__content-container {
   flex: 1;
   min-height: 0;
@@ -72,11 +68,6 @@
 
 .new-question-page__question-textarea {
   max-height: 50vh;
-}
-
-.new-question-page__button-icon {
-  font-size: 24px;
-  height: 24px;
 }
 
 :host::ng-deep {

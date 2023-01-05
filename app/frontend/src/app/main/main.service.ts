@@ -11,7 +11,7 @@ export class MainService {
 
   constructor(private readonly apiService: ApiService) {
     this.user$ = apiService.getCurrentUser().pipe(
-      shareReplay({bufferSize: 1, refCount: true})
+      shareReplay({bufferSize: 1, refCount: false})
     );
   }
 }

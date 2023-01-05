@@ -37,10 +37,6 @@
   height: 40px;
 }
 
-.settings-modal__h {
-  color: $color-text;
-}
-
 .settings-modal__hint {
   font-size: 18px;
   line-height: 22px;
@@ -48,4 +44,11 @@
 
 .settings-modal__link {
   text-decoration: underline;
+}
+
+.settings-modal__error-input-hint {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  color: red;
 }

@@ -16,6 +16,10 @@ const routes: Routes = [
         loadChildren: () => import('./pages/new-question/new-question.module').then(m => m.NewQuestionModule)
       },
       {
+        path: 'book-order',
+        loadChildren: () => import('./pages/book-order/book-order-page.module').then(m => m.BookOrderPageModule)
+      },
+      {
         path: 'admin',
         loadChildren: () => import('../admin/admin.module').then(m => m.AdminModule)
       },

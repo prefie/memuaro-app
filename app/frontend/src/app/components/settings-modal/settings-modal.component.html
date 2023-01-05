@@ -7,13 +7,13 @@
 
     <div class="settings-modal__form" [formGroup]="settingsForm">
       <div class="settings-modal__setting-container">
-        <div class="settings-modal__setting-label">Периодичность получения новых вопросов: </div>
+        <div class="settings-modal__setting-label">Периодичность получения новых вопросов:</div>
         <nz-select class="flex-1" formControlName="periodInDays" nzSize="large">
           <nz-option *ngFor="let option of periodOptions" [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
         </nz-select>
       </div>
 
-      <h2 class="settings-modal__h">Где вы хотите получать напоминания о новых вопросах?</h2>
+      <h2>Где вы хотите получать напоминания о новых вопросах?</h2>
 
       <div class="settings-modal__setting-container">
         <nz-switch [ngModel]="hasNotificationEmail$ | async"
@@ -21,12 +21,20 @@
                    [ngModelOptions]="{standalone: true}">
         </nz-switch>
         <div class="settings-modal__setting-label">Электронная почта</div>
-        <input *ngIf="hasNotificationEmail$ | async"
-               class="flex-1"
-               nz-input
-               formControlName="email"
-               placeholder="Введите адрес электронной почты"
-               nzSize="large"/>
+        <div class="position-relative flex-1">
+          <input *ngIf="hasNotificationEmail$ | async"
+                 class="full-width"
+                 type="email"
+                 nz-input
+                 formControlName="email"
+                 placeholder="your_email_address@gmail.com"
+                 [nzStatus]="settingsForm.controls.email.valid ? '' : 'error'"
+                 nzSize="large"/>
+          <small *ngIf="!settingsForm.controls.email.valid"
+                 class="settings-modal__error-input-hint">
+            Введите валидный адрес электронной почты
+          </small>
+        </div>
       </div>
 
       <div class="settings-modal__setting-container">
@@ -35,12 +43,23 @@
                    [ngModelOptions]="{standalone: true}">
         </nz-switch>
         <div class="settings-modal__setting-label">Telegram</div>
-        <input *ngIf="hasNotificationTelegram$ | async"
-               class="flex-1"
-               nz-input
-               formControlName="telegramName"
-               placeholder="Введите ник в телеграм"
-               nzSize="large"/>
+        <div class="position-relative flex-1">
+          <nz-input-group *ngIf="hasNotificationTelegram$ | async"
+                          class="full-width"
+                          nzPrefix="@"
+                          nzSize="large"
+                          [nzStatus]="settingsForm.controls.telegramName.valid ? '' : 'error'">
+            <input class="full-width"
+                   nz-input
+                   formControlName="telegramName"
+                   placeholder="your_telegram_name"
+                   nzSize="large"/>
+          </nz-input-group>
+          <small *ngIf="!settingsForm.controls.telegramName.valid"
+                 class="settings-modal__error-input-hint">
+            Введите валидный ник в телеграм
+          </small>
+        </div>
       </div>
 
       <div class="settings-modal__hint">Чтобы получать уведомления в Telegram, перейдите в <a class="settings-modal__link" href="https://t.me/RememoryNotificationsBot" target="_blank">бота</a> и нажмите "start"</div>

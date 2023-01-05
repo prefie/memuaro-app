@@ -9,10 +9,11 @@ import { ChangeDetectionStrategy, Component, HostBinding, Input } from '@angular
   imports: [CommonModule]
 })
 export class ImageComponent {
+  @HostBinding('class.flex-center') flexCenter = true;
   @HostBinding('style.pointer-events') pointerEvents = 'none';
   @HostBinding('style.user-select') userSelect = 'none';
-  @HostBinding('style.width') @Input() width = '100%';
-  @HostBinding('style.height') @Input() height = '100%';
+  @HostBinding('style.width') @Input() width = 'auto';
+  @HostBinding('style.height') @Input() height = 'auto';
   @Input() alt!: string;
   @Input() imageName!: string;
 }

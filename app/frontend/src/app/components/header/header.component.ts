@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, Inject, Input, NgZone } from '@angu
 import { FormBuilder } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { NzAvatarModule } from 'ng-zorro-antd/avatar';
+import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzDropDownModule } from 'ng-zorro-antd/dropdown';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzModalModule } from 'ng-zorro-antd/modal';
@@ -32,7 +33,8 @@ import { SvgIconComponent } from '../svg-icon/svg-icon.component';
     NzIconModule,
     NzModalModule,
     SettingsModalComponent,
-    LoaderModule
+    LoaderModule,
+    NzButtonModule
   ],
 })
 export class HeaderComponent {
@@ -54,7 +56,7 @@ export class HeaderComponent {
               private readonly fb: FormBuilder,
               private readonly cookieService: CookieService,
               private readonly apiService: ApiService,
-              @Inject(DOCUMENT) private document: Document) {}
+              @Inject(DOCUMENT) private readonly document: Document) {}
 
   ngOnInit(): void {
     this.isSettingsModalOpen$.pipe(
@@ -71,6 +73,10 @@ export class HeaderComponent {
       this.settings$.next(settings);
       this.loading$.next(false);
     });
+  }
+
+  openSettingsModal(): void {
+    this.isSettingsModalOpen$.next(true)
   }
 
   logout(): void {

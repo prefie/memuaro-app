@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { NzButtonModule } from 'ng-zorro-antd/button';
 import { NzIconModule } from 'ng-zorro-antd/icon';
 import { NzInputModule } from 'ng-zorro-antd/input';
@@ -39,18 +39,22 @@ export class SettingsModalComponent implements OnInit, OnDestroy {
 
   readonly settingsForm = this.fb.group({
     periodInDays: 0,
-    email: '',
-    telegramName: ''
+    email: ['', [Validators.pattern(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/g)]],
+    telegramName: ['', [Validators.minLength(5), Validators.maxLength(32), Validators.pattern(/^[a-zA-Z0-9_]+$/g)]]
   });
   readonly modalFooter: ModalButtonOptions[] = [{
     label: 'Сохранить',
     size: 'large',
     type: 'primary',
-    onClick: () => this.saveSettings.emit({
-      email: this.settingsForm.controls.email.value ?? undefined,
-      telegramName: this.settingsForm.controls.telegramName.value ?? undefined,
-      periodInDays: this.settingsForm.controls.periodInDays.value ?? 0
-    })
+    onClick: () => {
+      if (this.settingsForm.valid) {
+        this.saveSettings.emit({
+          email: this.settingsForm.controls.email.value ?? undefined,
+          telegramName: this.settingsForm.controls.telegramName.value ?? undefined,
+          periodInDays: this.settingsForm.controls.periodInDays.value ?? 0
+        });
+      }
+    }
   }];
   readonly periodOptions = SETTINGS_MODAL_PERIOD_OPTIONS;
 

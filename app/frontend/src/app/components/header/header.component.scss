@@ -3,7 +3,9 @@
 .header {
   background-color: $color-basic;
   height: 65px;
-  display: block;
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
 }
 
 .header__title {
@@ -33,10 +35,37 @@
 .header__icon {
   font-size: 24px;
   color: $color-text;
+  margin-right: 12px;
 }
 
 .header__delimiter {
   height: 32px;
   width: 1px;
   background-color: $color-text-brown-light;
+}
+
+.header__my-books-button {
+  background-color: $color-text;
+  border-color: transparent;
+  padding: 0 30px;
+
+  &:hover {
+    background-color: $color-text-lighten-1;
+  }
+
+  &:active {
+    background-color: $color-text-brown-light;
+  }
+}
+
+.header__button-icon {
+  font-size: 24px;
+  height: 24px;
+}
+
+::ng-deep {
+  .ant-page-header-heading {
+    align-items: center;
+    flex: 1;
+  }
 }

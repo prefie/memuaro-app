@@ -1,5 +1,6 @@
+import { DOCUMENT } from '@angular/common';
 import { HttpClient, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
+import { Inject, Injectable, NgZone } from '@angular/core';
 import { Router } from '@angular/router';
 import jwtDecode from 'jwt-decode';
 import { CookieService } from 'ngx-cookie-service';
@@ -14,9 +15,11 @@ import { HttpOptions, TokensDto } from './api.models';
 })
 export class GatewayClientService {
   constructor(private readonly http: HttpClient,
+              private readonly ngZone: NgZone,
               private readonly router: Router,
               private readonly apiHelper: ApiHelperService,
-              private readonly cookieService: CookieService) {}
+              private readonly cookieService: CookieService,
+              @Inject(DOCUMENT) private readonly document: Document) {}
 
   get<T>(commandUrl: string, options?: HttpOptions): Observable<T> {
     const request: (accessToken?: string) => Observable<HttpResponse<T>> = (accessToken?: string) => this.http.get<T>(commandUrl, {
@@ -60,8 +63,8 @@ export class GatewayClientService {
       filter((response): response is HttpResponse<TokensDto> => !!response),
       map((response) => ApiHelperService.getHandledResponse(response)),
       tap((tokensDto) => {
-        this.cookieService.set(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10);
-        this.cookieService.set(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10);
+        this.cookieService.set(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10, '/');
+        this.cookieService.set(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10, '/');
       })
     );
   }
@@ -70,12 +73,15 @@ export class GatewayClientService {
     const accessToken = this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME);
 
     if (!accessToken) {
-      this.router.navigate(['/auth']).then();
+      this.ngZone.run(() => this.router.navigate(['auth']).then(() => this.document.location.reload()));
     }
 
     if ((jwtDecode(accessToken) as DecodedJwtToken).exp * 1000 > Date.now()) {
       return request().pipe(
-        catchError(() => of(null)),
+        catchError(() => {
+          this.document.location.reload();
+          return of(null);
+        }),
         filter((response): response is HttpResponse<T> => !!response),
         map((response) => ApiHelperService.getHandledResponse(response))
       );
@@ -96,13 +102,16 @@ export class GatewayClientService {
       }
     }).pipe(
       catchError(() => {
-        this.router.navigate(['/auth']).then();
+        const location = this.document.location;
+        this.cookieService.delete(ACCESS_TOKEN_COOKIE_NAME, '/', location.hostname);
+        this.cookieService.delete(REFRESH_TOKEN_COOKIE_NAME, '/', location.hostname);
+        this.ngZone.run(() => this.router.navigate(['auth']).then(() => location.reload()));
         return of(null);
       }),
       tap((tokensDto: TokensDto | null) => {
         if (tokensDto) {
-          this.cookieService.set(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10);
-          this.cookieService.set(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10);
+          this.cookieService.set(ACCESS_TOKEN_COOKIE_NAME, tokensDto.accessToken, 10, '/');
+          this.cookieService.set(REFRESH_TOKEN_COOKIE_NAME, tokensDto.refreshToken, 10, '/');
         }
       })
     );
