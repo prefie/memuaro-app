@@ -83,7 +83,10 @@ export class SettingsModalComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.settingsForm.patchValue(this.settings);
+    this.settingsForm.patchValue({
+      ...this.settings,
+      telegramName: this.settings.telegramName?.slice(1)
+    });
     this.hasNotificationEmail$.next(!!this.settings.email);
     this.hasNotificationTelegram$.next(!!this.settings.telegramName);
   }
