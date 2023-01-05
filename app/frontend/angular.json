@@ -76,8 +76,7 @@
                 }
               ],
               "outputHashing": "all",
-              "sourceMap": true,
-              "inlineSources": true
+              "sourceMap": true
             },
             "development": {
               "buildOptimizer": false,
