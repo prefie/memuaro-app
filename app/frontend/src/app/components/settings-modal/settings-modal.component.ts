@@ -39,7 +39,7 @@ export class SettingsModalComponent implements OnInit, OnDestroy {
 
   readonly settingsForm = this.fb.group({
     periodInDays: 0,
-    email: ['', [Validators.pattern(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/g)]],
+    email: ['', [Validators.pattern(/^([a-zA-Z0-9_\-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([a-zA-Z0-9\-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/)]],
     telegramName: ['', [Validators.minLength(5), Validators.maxLength(32), Validators.pattern(/^[a-zA-Z0-9_]+$/)]]
   });
   readonly modalFooter: ModalButtonOptions[] = [{
