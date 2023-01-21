@@ -81,8 +81,8 @@ export class HeaderComponent {
 
   logout(): void {
     const location = this.document.location;
-    this.cookieService.delete(ACCESS_TOKEN_COOKIE_NAME, '/', location.hostname);
-    this.cookieService.delete(REFRESH_TOKEN_COOKIE_NAME, '/', location.hostname);
+    this.cookieService.delete(ACCESS_TOKEN_COOKIE_NAME, '/');
+    this.cookieService.delete(REFRESH_TOKEN_COOKIE_NAME, '/');
     this.ngZone.run(() => this.router.navigate(['auth']).then(() => location.reload()));
   }
 
