@@ -7,13 +7,13 @@
 
     <div class="settings-modal__form" [formGroup]="settingsForm">
       <div class="settings-modal__setting-container">
-        <div class="settings-modal__setting-label">Периодичность получения новых вопросов:</div>
+        <div class="settings-modal__setting-label">Периодичность получения напоминаний:</div>
         <nz-select class="flex-1" formControlName="periodInDays" nzSize="large">
           <nz-option *ngFor="let option of periodOptions" [nzValue]="option.value" [nzLabel]="option.label"></nz-option>
         </nz-select>
       </div>
 
-      <h2>Где вы хотите получать напоминания о новых вопросах?</h2>
+      <h2>Где вы хотите получать напоминания?</h2>
 
       <div class="settings-modal__setting-container">
         <nz-switch [ngModel]="hasNotificationEmail$ | async"

@@ -12,7 +12,14 @@
   flex-direction: column;
   gap: 30px;
   align-items: flex-start;
-  padding: 3vh 1vw;
+  padding: 8vh 1vw;
+  overflow-y: auto;
+}
+
+.book-order-form__back-button {
+  position: fixed;
+  top: calc(65px + 3vh);
+  left: 1vw;
 }
 
 .book-order-form__form-container {

@@ -78,8 +78,10 @@ export class GatewayClientService {
 
     if ((jwtDecode(accessToken) as DecodedJwtToken).exp * 1000 > Date.now()) {
       return request().pipe(
-        catchError(() => {
-          this.document.location.reload();
+        catchError((response) => {
+          if (response.statusCode === 401) {
+            this.document.location.reload();
+          }
           return of(null);
         }),
         filter((response): response is HttpResponse<T> => !!response),

@@ -1,5 +1,5 @@
 <nz-layout class="book-order-form__content-container full-height full-height">
-  <a nz-button nzType="link" nzSize="large" (click)="back('/app/book-order')">
+  <a nz-button nzType="link" nzSize="large" class="book-order-form__back-button" (click)="back('/app/book-order')">
     <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
     Назад
   </a>
@@ -72,7 +72,7 @@
             nzSize="large"
             nz-tooltip
             [nzTooltipTitle]="!form.valid ? 'Чтобы оформить книгу, заполните все обязательные поля' : ''"
-            [class.disabled]="!form.valid"
+            [class.disabled]="!form.valid || !form.controls.flat.value"
             (click)="orderBook()">
       Оформить книгу
     </button>

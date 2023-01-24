@@ -96,7 +96,7 @@ export class ApiService {
   }
 
   sendRequestToCreateBook(userId: string): Observable<void> {
-    return this.gatewayClientService.post('api/questions/book', {}, {
+    return this.gatewayClientService.post('/api/questions/book', {}, {
       params: { userId }
     })
   }

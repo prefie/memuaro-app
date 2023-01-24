@@ -1,6 +1,5 @@
 import { HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { QuestionStatus } from '../app/main/pages/general/general-page.models';
-import { Validators } from '@angular/forms';
 
 export interface HttpOptions {
   headers?: AppHttpHeaders;
@@ -101,5 +100,5 @@ export interface AddressSettingsDto {
   street?: string;
   house?: string;
   building?: string;
-  flat?: string;
+  flat?: number;
 }
