@@ -17,6 +17,7 @@ using Rememory.Bot.Settings;
 using Rememory.Email;
 using Rememory.Email.Settings;
 using Rememory.Persistance.Repositories.NotificationSettingsRepository;
+using Rememory.Persistance.Repositories.UserSettingsRepository;
 using Rememory.WebApi.Notifications;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -66,6 +67,7 @@ builder.Services.AddSingleton<IQuestionRepository, QuestionRepository>();
 builder.Services.AddSingleton<IGlobalQuestionRepository, GlobalQuestionRepository>();
 builder.Services.AddSingleton<ICategoryRepository, CategoryRepository>();
 builder.Services.AddSingleton<INotificationSettingsRepository, NotificationSettingsRepository>();
+builder.Services.AddSingleton<IUserSettingsRepository, UserSettingsRepository>();
 builder.Services.AddSingleton<IBot, TelegramBot>();
 builder.Services.AddSingleton<IEmailClient, EmailClient>();
 builder.Services.AddSingleton<AuthProvider>();

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import {
+  AddressSettingsDto,
   AnswerRequestDto,
   CategoriesDto,
   CategoryDto,
@@ -79,5 +80,24 @@ export class ApiService {
 
   getNotificationSettings(userId: string): Observable<NotificationSettingsDto> {
     return this.gatewayClientService.get<NotificationSettingsDto>(`/api/notifications/settings/${userId}`);
+  }
+
+  setAddressSettings(userId: string, addressSettings: AddressSettingsDto): Observable<void> {
+    const content = JSON.stringify(addressSettings);
+    return this.gatewayClientService.post(`/api/users/settings/address`, content, {
+      params: { userId }
+    });
+  }
+
+  getAddressSettings(userId: string): Observable<AddressSettingsDto> {
+    return this.gatewayClientService.get<AddressSettingsDto>('/api/users/settings', {
+      params: { userId }
+    })
+  }
+
+  sendRequestToCreateBook(userId: string): Observable<void> {
+    return this.gatewayClientService.post('api/questions/book', {}, {
+      params: { userId }
+    })
   }
 }

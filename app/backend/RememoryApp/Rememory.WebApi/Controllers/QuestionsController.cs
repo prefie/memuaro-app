@@ -5,8 +5,13 @@ using Rememory.Persistance.Repositories.GlobalQuestionRepository;
 using Rememory.Persistance.Repositories.QuestionRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PdfSharp;
+using Rememory.Email;
+using Rememory.Persistance.Repositories.UserRepository;
+using Rememory.Persistance.Repositories.UserSettingsRepository;
 using Rememory.WebApi.Dtos.Question;
 using Rememory.WebApi.Exceptions;
+using TheArtOfDev.HtmlRenderer.PdfSharp;
 
 namespace Rememory.WebApi.Controllers;
 
@@ -15,14 +20,23 @@ public class QuestionsController : BaseController
 {
     private readonly IGlobalQuestionRepository _globalQuestionRepository;
     private readonly IQuestionRepository _questionRepository;
+    private readonly IUserSettingsRepository _userSettingsRepository;
+    private readonly IUserRepository _userRepository;
+    private readonly IEmailClient _emailClient;
 
     public QuestionsController(
         IGlobalQuestionRepository globalQuestionRepository,
         IQuestionRepository questionRepository,
-        AuthProvider authProvider) : base(authProvider)
+        AuthProvider authProvider,
+        IUserRepository userRepository,
+        IUserSettingsRepository userSettingsRepository,
+        IEmailClient emailClient) : base(authProvider)
     {
         _globalQuestionRepository = globalQuestionRepository;
         _questionRepository = questionRepository;
+        _emailClient = emailClient;
+        _userRepository = userRepository;
+        _userSettingsRepository = userSettingsRepository;
     }
 
     [HttpGet]
@@ -39,6 +53,7 @@ public class QuestionsController : BaseController
             foreach (var question in questions)
                 globalQuestionIds.Add(question.GlobalQuestionId);
         }
+
         var globalQuestions = await _globalQuestionRepository.GetGlobalQuestionWithExcept(globalQuestionIds,
             request.CategoryIds?.ToHashSet());
 
@@ -51,7 +66,8 @@ public class QuestionsController : BaseController
 
     [HttpGet]
     [Route("new")]
-    public async Task<ActionResult<QuestionsDto>> GetNewQuestions([FromQuery] Guid userId, [FromQuery] Guid[] globalQuestionIds)
+    public async Task<ActionResult<QuestionsDto>> GetNewQuestions([FromQuery] Guid userId,
+        [FromQuery] Guid[] globalQuestionIds)
     {
         CheckAccessForUser(userId);
 
@@ -67,7 +83,7 @@ public class QuestionsController : BaseController
                 Id = Guid.NewGuid(), GlobalQuestionId = globalQuestion.Id, Title = globalQuestion.Title,
                 CategoryId = globalQuestion.CategoryId, UserId = userId, Status = Status.Unanswered
             };
-            
+
             await _questionRepository.CreateAsync(userQuestion);
             questions.Add(new QuestionDto(userQuestion));
         }
@@ -110,9 +126,14 @@ public class QuestionsController : BaseController
     [HttpPost]
     [Authorize(Roles = "Admin")]
     [Route("newGlobalQuestion")]
-    public async Task<ActionResult<GlobalQuestionDto>> CreateNewGlobalQuestion([FromBody] CreateGlobalQuestionRequestDto request)
+    public async Task<ActionResult<GlobalQuestionDto>> CreateNewGlobalQuestion(
+        [FromBody] CreateGlobalQuestionRequestDto request)
     {
-        var globalQuestion = new GlobalQuestion {Id = Guid.NewGuid(), Title = request.Title, CategoryId = request.CategoryId ?? Guid.Parse("ea815826-0c02-e446-a984-00f62a687381")};
+        var globalQuestion = new GlobalQuestion
+        {
+            Id = Guid.NewGuid(), Title = request.Title,
+            CategoryId = request.CategoryId ?? Guid.Parse("ea815826-0c02-e446-a984-00f62a687381")
+        };
         await _globalQuestionRepository.CreateAsync(globalQuestion);
 
         return Ok(new GlobalQuestionDto(globalQuestion));
@@ -127,13 +148,46 @@ public class QuestionsController : BaseController
 
         var question = new Question
         {
-            Id = Guid.NewGuid(), Title = request.Title, CategoryId = Guid.Parse("ea815826-0c02-e446-a984-00f62a687381"), GlobalQuestionId = Guid.Empty,
+            Id = Guid.NewGuid(), Title = request.Title, CategoryId = Guid.Parse("ea815826-0c02-e446-a984-00f62a687381"),
+            GlobalQuestionId = Guid.Empty,
             Status = Status.Unanswered, UserId = request.UserId
         };
 
         await _questionRepository.CreateAsync(question);
 
         return Ok(new QuestionDto(question));
+    }
+
+    [HttpPost]
+    [Authorize]
+    [Route("book")]
+    public async Task<IActionResult> SendRequestToCreateBook([FromQuery] Guid userId)
+    {
+        CheckAccessForUser(userId);
+
+        var addressSettings = await _userSettingsRepository.GetAddressSettings(userId);
+        if (addressSettings == null)
+            throw new NotFoundException(nameof(AddressSettings), userId);
+
+        var user = await _userRepository.GetAsync(userId);
+
+        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
+        var questions = (await _questionRepository.GetForUserAsync(userId))
+            .Where(q => q.Status == Status.Answered)
+            .OrderBy(q => q.CategoryId)
+            .Select(q => $"<p><h1>{q.Title}</h1>{q.Answer}</p>")
+            .ToList();
+        if (questions.Count < 1)
+            return BadRequest("answers < 1");
+
+        var resultString = string.Join(' ', questions);
+        var pdf = PdfGenerator.GeneratePdf(resultString, PageSize.A4);
+        using var stream = new MemoryStream();
+        pdf.Save(stream);
+        var message = $"<p>Адрес пользователя {user.Email}:</p><p>{addressSettings.ToHtml()}</p>";
+        await _emailClient.SendMessageWithAttachments(
+            _emailClient.EmailSettings.Email ?? "rememory.notifications@yandex.ru", message, stream, "answers.pdf");
+        return Ok();
     }
 
     private void CheckAccessForUser(Guid userId)

@@ -1,5 +1,6 @@
 import { HttpContext, HttpHeaders, HttpParams } from '@angular/common/http';
 import { QuestionStatus } from '../app/main/pages/general/general-page.models';
+import { Validators } from '@angular/forms';
 
 export interface HttpOptions {
   headers?: AppHttpHeaders;
@@ -91,4 +92,14 @@ export interface NotificationSettingsDto {
   email?: string;
   telegramName?: string;
   periodInDays: number;
+}
+
+export interface AddressSettingsDto {
+  region?: string;
+  district?: string;
+  town?: string;
+  street?: string;
+  house?: string;
+  building?: string;
+  flat?: string;
 }
