@@ -14,6 +14,10 @@ RUN dotnet build "Memuaro.WebApi.csproj" -c Release -o /app/build
 FROM build AS publish
 RUN dotnet publish "Memuaro.WebApi.csproj" -c Release -o /app/publish
 
+RUN apt-get update \
+    && apt-get install -y --allow-unauthenticated wkhtmltopdf \
+    && rm -rf /var/lib/apt/lists/*
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
