@@ -4,7 +4,7 @@ services:
   backend:
     image: backend-memuaro
     build:
-      context: .\backend\MemuaroApp
+      context: ./backend/RememoryApp
       dockerfile: Dockerfile
     ports:
       - "5000:80"
@@ -12,10 +12,15 @@ services:
   frontend:
     image: frontend-memuaro
     build:
-      context: .\frontend
+      context: ./frontend
       dockerfile: Dockerfile
     depends_on:
       - backend
+    volumes:
+      - /etc/letsencrypt/live/rememory.ownchgk.ru/fullchain.pem:/etc/letsencrypt/live/rememory.ownchgk.ru/fullchain.pem
+      - /etc/letsencrypt/live/rememory.ownchgk.ru/privkey.pem:/etc/letsencrypt/live/rememory.ownchgk.ru/privkey.pem
+      - /etc/letsencrypt/options-ssl-nginx.conf:/etc/letsencrypt/options-ssl-nginx.conf
+      - /etc/letsencrypt/ssl-dhparams.pem:/etc/letsencrypt/ssl-dhparams.pem
     ports:
       - "80:80"
       - "443:443"
