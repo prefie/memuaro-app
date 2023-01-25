@@ -1,4 +1,4 @@
-<nz-layout class="book-order-form__content-container full-height full-height">
+<nz-layout class="book-order-form__content-container full-height full-height" [appLoader]="loading$ | async">
   <a nz-button nzType="link" nzSize="large" class="book-order-form__back-button" (click)="back('/app/book-order')">
     <span nz-icon nzType="arrow-left" nzTheme="outline"></span>
     Назад
