@@ -90,7 +90,7 @@ export class ApiService {
   }
 
   getAddressSettings(userId: string): Observable<AddressSettingsDto> {
-    return this.gatewayClientService.get<AddressSettingsDto>('/api/users/settings', {
+    return this.gatewayClientService.get<AddressSettingsDto>('/api/users/settings/address', {
       params: { userId }
     })
   }

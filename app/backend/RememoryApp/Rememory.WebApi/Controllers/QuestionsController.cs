@@ -1,17 +1,17 @@
-﻿using Rememory.Auth;
+﻿using HtmlRendererCore.PdfSharp;
+using Rememory.Auth;
 using Rememory.Persistance.Entities;
 using Rememory.Persistance.Models;
 using Rememory.Persistance.Repositories.GlobalQuestionRepository;
 using Rememory.Persistance.Repositories.QuestionRepository;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PdfSharp;
+using PdfSharpCore;
 using Rememory.Email;
 using Rememory.Persistance.Repositories.UserRepository;
 using Rememory.Persistance.Repositories.UserSettingsRepository;
 using Rememory.WebApi.Dtos.Question;
 using Rememory.WebApi.Exceptions;
-using TheArtOfDev.HtmlRenderer.PdfSharp;
 
 namespace Rememory.WebApi.Controllers;
 
@@ -171,7 +171,6 @@ public class QuestionsController : BaseController
 
         var user = await _userRepository.GetAsync(userId);
 
-        System.Text.Encoding.RegisterProvider(System.Text.CodePagesEncodingProvider.Instance);
         var questions = (await _questionRepository.GetForUserAsync(userId))
             .Where(q => q.Status == Status.Answered)
             .OrderBy(q => q.CategoryId)
