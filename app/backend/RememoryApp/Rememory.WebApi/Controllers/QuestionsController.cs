@@ -1,4 +1,5 @@
-﻿using Rememory.Auth;
+﻿using System.Text;
+using Rememory.Auth;
 using Rememory.Persistance.Entities;
 using Rememory.Persistance.Models;
 using Rememory.Persistance.Repositories.GlobalQuestionRepository;
@@ -10,7 +11,7 @@ using Rememory.Persistance.Repositories.UserRepository;
 using Rememory.Persistance.Repositories.UserSettingsRepository;
 using Rememory.WebApi.Dtos.Question;
 using Rememory.WebApi.Exceptions;
-using SelectPdf;
+using WkHtmlToPdfDotNet;
 
 namespace Rememory.WebApi.Controllers;
 
@@ -178,15 +179,27 @@ public class QuestionsController : BaseController
         if (questions.Count < 1)
             return BadRequest("answers < 1");
 
-        var resultString = string.Join(' ', questions);
-        var converter = new HtmlToPdf();
-        var pdf = converter.ConvertHtmlString(resultString);
+        var resultString = "<meta charset=\"UTF-8\" />" + string.Join(' ', questions);
+        var converter = new SynchronizedConverter(new PdfTools());
+        var doc = new HtmlToPdfDocument
+        {
+            GlobalSettings = {
+                ColorMode = ColorMode.Color,
+                Orientation = Orientation.Portrait,
+                PaperSize = PaperKind.A4,
+                Margins = new MarginSettings { Top = 10 },
+            },
+            Objects =
+            {
+                new ObjectSettings {HtmlContent = resultString, Encoding = Encoding.UTF8}
+            }
+        };
+        var bytes = converter.Convert(doc);
         using var stream = new MemoryStream();
-        pdf.Save(stream);
+        await stream.WriteAsync(bytes);
         var message = $"<p>Адрес пользователя {user.Email}:</p><p>{addressSettings.ToHtml()}</p>";
         await _emailClient.SendMessageWithAttachments(
             _emailClient.EmailSettings.Email ?? "rememory.notifications@yandex.ru", message, stream, "answers.pdf");
-        pdf.Close();
         return Ok();
     }
 
